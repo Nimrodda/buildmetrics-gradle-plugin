@@ -1,3 +1,4 @@
+import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 
 private val PLAIN_TEXT = "plain/text".toMediaType()
-private const val ANALYTICS_URL = "https://www.google-analytics.com/collect"
 
 class BuildMetricsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -28,7 +28,8 @@ class BuildMetricsPlugin : Plugin<Project> {
             BuildDurationTracker(
                 extension,
                 User("555", "Nimrod"),
-                okHttpClient
+                okHttpClient,
+                project.gradle.startParameter.isOffline
             )
         )
     }
@@ -60,7 +61,9 @@ data class Event(
 class BuildDurationTracker(
     private val extension: BuildMetricsExtension,
     private val user: User,
-    private val httpClient: OkHttpClient
+    private val httpClient: OkHttpClient,
+    private val isOffline: Boolean,
+    private val url: HttpUrl = HttpUrl.Builder().scheme("https").host("www.google-analytics.com").addPathSegment("collect").build()
 ) : BuildListener {
     private val log = LoggerFactory.getLogger(BuildDurationTracker::class.java)
     private var buildStart: Long = 0
@@ -86,6 +89,7 @@ class BuildDurationTracker(
             ?.buildStartedTime ?: System.currentTimeMillis()
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun trackBuildFinished(isSuccessful: Boolean, buildDuration: Long) {
         val event = Event(
             trackingId = extension.trackingId,
@@ -95,8 +99,16 @@ class BuildDurationTracker(
             label = if (isSuccessful) "Success" else "Failure",
             value = "$buildDuration"
         )
+        if (isOffline) {
+            cacheTracked(event)
+        } else {
+            postEvent(event)
+        }
+    }
+
+    private fun postEvent(event: Event) {
         val request = Request.Builder()
-            .url(ANALYTICS_URL)
+            .url(url)
             .post(event.toRequestBody())
             .build()
 
@@ -114,7 +126,7 @@ class BuildDurationTracker(
         }
     }
 
-    fun cacheTracked(event: Event) {
+    private fun cacheTracked(event: Event) {
         // TODO store in local DB
     }
 }
