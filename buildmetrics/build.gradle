@@ -1,0 +1,31 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm"
+    id "java-gradle-plugin"
+    id "org.jetbrains.gradle.plugin.idea-ext" version "0.7"
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation "com.squareup.okhttp3:okhttp:4.2.1"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.2.1"
+    testImplementation "junit:junit:4.12"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.2.1")
+    testImplementation 'com.google.truth:truth:1.0'
+}
+
+gradlePlugin {
+    plugins {
+        simplePlugin {
+            id = "com.nimroddayan.gradle.build.metrics"
+            implementationClass = "com.nimroddayan.buildmetrics.plugin.BuildMetricsPlugin"
+        }
+    }
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
