@@ -6,18 +6,22 @@ import com.nimroddayan.buildmetrics.publisher.google.GoogleAnalyticsRestApi
 import com.nimroddayan.buildmetrics.tracker.BuildDurationTracker
 import com.nimroddayan.buildmetrics.tracker.User
 import okhttp3.OkHttpClient
-import org.gradle.api.GradleException
+import okhttp3.logging.HttpLoggingInterceptor
+import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
+
+private val log = LoggerFactory.getLogger("BuildMetricsPlugin")
 
 @Suppress("unused")
 class BuildMetricsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        val extension =
-            project.extensions.create("buildMetrics", BuildMetricsExtension::class.java, project)
+        val extension = project.extensions.create("buildMetrics", BuildMetricsExtension::class.java)
 
         val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor(HttpGradleLogger()).apply { level = HttpLoggingInterceptor.Level.BODY })
             .callTimeout(3L, TimeUnit.SECONDS)
             .build()
 
@@ -27,7 +31,10 @@ class BuildMetricsPlugin : Plugin<Project> {
             )
 
         val trackingId =
-            extension.trackingId ?: throw GradleException("Missing trackingId in extension")
+            extension.trackingId ?: throw InvalidUserDataException("Missing trackingId in extension")
+
+        log.info("Using tracking ID: $trackingId")
+        log.info("Using analytics rest API: ${analyticsRestApi::class.simpleName}")
 
         project.gradle.addBuildListener(
             BuildDurationTracker(
@@ -41,7 +48,13 @@ class BuildMetricsPlugin : Plugin<Project> {
     }
 }
 
-open class BuildMetricsExtension(@Suppress("UNUSED_PARAMETER") project: Project) {
+open class BuildMetricsExtension {
     var trackingId: String? = null
     var analyticsRestApi: AnalyticsRestApi? = null
+}
+
+private class HttpGradleLogger : HttpLoggingInterceptor.Logger {
+    override fun log(message: String) {
+        log.debug(message)
+    }
 }

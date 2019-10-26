@@ -11,6 +11,7 @@ repositories {
 dependencies {
     implementation "com.squareup.okhttp3:okhttp:4.2.2"
     implementation "com.squareup.okhttp3:logging-interceptor:4.2.2"
+    implementation "io.github.microutils:kotlin-logging:1.7.6"
     testImplementation "junit:junit:4.12"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     testImplementation("com.squareup.okhttp3:mockwebserver:4.2.1")

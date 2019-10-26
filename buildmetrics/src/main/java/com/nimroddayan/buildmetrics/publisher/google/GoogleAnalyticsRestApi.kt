@@ -2,6 +2,7 @@ package com.nimroddayan.buildmetrics.publisher.google
 
 import com.nimroddayan.buildmetrics.publisher.AnalyticsRestApi
 import com.nimroddayan.buildmetrics.tracker.Event
+import mu.KotlinLogging
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -17,6 +18,8 @@ private val ANALYTICS_URL = HttpUrl.Builder()
     .addPathSegments("collect")
     .build()
 
+private val log = KotlinLogging.logger {}
+
 class GoogleAnalyticsRestApi(
     private val httpClient: OkHttpClient,
     private val url: HttpUrl = ANALYTICS_URL
@@ -29,7 +32,7 @@ class GoogleAnalyticsRestApi(
             .post(event.toRequestBody())
             .build()
 
-
+        log.debug { "Sending analytics to Google" }
         val response = httpClient.newCall(request).execute()
         val isSuccess = response.isSuccessful
         response.close()
