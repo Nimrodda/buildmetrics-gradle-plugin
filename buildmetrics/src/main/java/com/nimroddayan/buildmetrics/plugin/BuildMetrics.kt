@@ -1,60 +1,37 @@
 package com.nimroddayan.buildmetrics.plugin
 
 import com.nimroddayan.buildmetrics.cache.SQLiteEventDao
+import com.nimroddayan.buildmetrics.plugin.Injection.okHttpClient
 import com.nimroddayan.buildmetrics.publisher.AnalyticsRestApi
 import com.nimroddayan.buildmetrics.publisher.google.GoogleAnalyticsRestApi
 import com.nimroddayan.buildmetrics.tracker.BuildDurationTracker
 import com.nimroddayan.buildmetrics.tracker.User
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import org.gradle.api.InvalidUserDataException
+import mu.KotlinLogging
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.slf4j.LoggerFactory
-import java.util.concurrent.TimeUnit
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 
-private val log = LoggerFactory.getLogger("BuildMetricsPlugin")
+private val log = KotlinLogging.logger {}
 
 @Suppress("unused")
 class BuildMetricsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create("buildMetrics", BuildMetricsExtension::class.java)
 
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor(HttpGradleLogger()).apply { level = HttpLoggingInterceptor.Level.BODY })
-            .callTimeout(3L, TimeUnit.SECONDS)
-            .build()
-
-        val analyticsRestApi =
-            extension.analyticsRestApi ?: GoogleAnalyticsRestApi(
-                okHttpClient
-            )
-
-        val trackingId =
-            extension.trackingId ?: throw InvalidUserDataException("Missing trackingId in extension")
-
-        log.info("Using tracking ID: $trackingId")
-        log.info("Using analytics rest API: ${analyticsRestApi::class.simpleName}")
-
+        log.debug { "Registering build listener" }
         project.gradle.addBuildListener(
             BuildDurationTracker(
-                trackingId,
+                extension,
                 User("555", "Nimrod"),
-                project.gradle.startParameter.isOffline,
-                analyticsRestApi,
+                GoogleAnalyticsRestApi(okHttpClient),
                 SQLiteEventDao()
             )
         )
     }
 }
 
-open class BuildMetricsExtension {
-    var trackingId: String? = null
-    var analyticsRestApi: AnalyticsRestApi? = null
-}
-
-private class HttpGradleLogger : HttpLoggingInterceptor.Logger {
-    override fun log(message: String) {
-        log.debug(message)
-    }
+open class BuildMetricsExtension(objectFactory: ObjectFactory) {
+    val trackingId: Property<String> = objectFactory.property(String::class.java)
+    val analyticsRestApi: Property<AnalyticsRestApi> = objectFactory.property(AnalyticsRestApi::class.java)
 }

@@ -1,5 +1,6 @@
 package com.nimroddayan.buildmetrics
 
+import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.UnexpectedBuildFailure
@@ -29,10 +30,37 @@ class DryRunTest {
             plugins {
                 id "com.nimroddayan.gradle.build.metrics"
             }
+            
+            buildMetrics {
+            }
         """
         )
 
         runGradle()
+    }
+
+    @Test
+    fun `run build successfully track`() {
+        buildFile.writeText(
+            """
+            plugins {
+                id "com.nimroddayan.gradle.build.metrics"
+            }
+            
+            buildMetrics {
+                trackingId = "foo"
+            }
+        """
+        )
+
+        runGradle()
+    }
+
+    @Test
+    fun `apply plugin successfully`() {
+        val project = ProjectBuilder.builder().build()
+
+        project.pluginManager.apply("com.nimroddayan.gradle.build.metrics")
     }
 
     private fun runGradle(): BuildResult {
