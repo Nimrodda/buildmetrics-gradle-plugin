@@ -1,7 +1,7 @@
 package com.nimroddayan.buildmetrics.publisher.google
 
+import com.nimroddayan.buildmetrics.Event
 import com.nimroddayan.buildmetrics.publisher.AnalyticsRestApi
-import com.nimroddayan.buildmetrics.tracker.Event
 import mu.KotlinLogging
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
@@ -25,11 +25,11 @@ class GoogleAnalyticsRestApi(
     private val url: HttpUrl = ANALYTICS_URL
 ) : AnalyticsRestApi {
 
-    override fun trackEvent(event: Event): Boolean {
+    override fun trackEvent(trackingId: String, uid: String, event: Event): Boolean {
         val request = Request.Builder()
             .url(url)
             .header("User-Agent", "")
-            .post(event.toRequestBody())
+            .post(event.toRequestBody(trackingId, uid))
             .build()
 
         log.debug { "Sending analytics to Google" }
@@ -40,7 +40,7 @@ class GoogleAnalyticsRestApi(
     }
 }
 
-fun Event.toRequestBody(): RequestBody {
+fun Event.toRequestBody(trackingId: String, uid: String): RequestBody {
     return "v=1&tid=$trackingId&uid=$uid&t=event&ec=$category&ea=$action&el=$label&ev=$value"
         .toRequestBody(PLAIN_TEXT)
 }

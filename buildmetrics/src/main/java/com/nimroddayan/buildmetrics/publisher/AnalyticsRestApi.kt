@@ -1,7 +1,7 @@
 package com.nimroddayan.buildmetrics.publisher
 
-import com.nimroddayan.buildmetrics.tracker.Event
+import com.nimroddayan.buildmetrics.Event
 
 interface AnalyticsRestApi {
-    fun trackEvent(event: Event): Boolean
+    fun trackEvent(trackingId: String, uid: String, event: Event): Boolean
 }

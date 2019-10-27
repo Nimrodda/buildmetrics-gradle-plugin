@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS client (
+  id TEXT NOT NULL PRIMARY KEY
+);
+
+insert:
+INSERT INTO client (id)
+VALUES (?);
+
+selectFirst:
+SELECT * FROM client LIMIT 1;
+
+deleteAll:
+DELETE FROM client;

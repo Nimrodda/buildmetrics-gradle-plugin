@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS event (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  category TEXT NOT NULL,
+  action TEXT NOT NULL,
+  label TEXT NOT NULL,
+  value TEXT NOT NULL
+);
+
+insert:
+INSERT INTO event (category, action, label, value)
+VALUES (?, ?, ?, ?);
+
+selectAll:
+SELECT * FROM event;
+
+delete:
+DELETE FROM event
+WHERE id = ?;
+
+purge:
+DELETE FROM event;

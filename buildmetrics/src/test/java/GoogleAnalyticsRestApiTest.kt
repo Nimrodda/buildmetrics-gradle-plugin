@@ -2,7 +2,6 @@ package com.nimroddayan.buildmetrics
 
 import com.google.common.truth.Truth.assertThat
 import com.nimroddayan.buildmetrics.publisher.google.GoogleAnalyticsRestApi
-import com.nimroddayan.buildmetrics.tracker.Event
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -18,9 +17,10 @@ class GoogleAnalyticsRestApiTest {
 
         GoogleAnalyticsRestApi(OkHttpClient(), url)
             .trackEvent(
-                Event(
-                    trackingId = "FOO",
-                    uid = "555",
+                trackingId = "FOO",
+                uid = "555",
+                event = Event.Impl(
+                    id = 555L,
                     category = "Build",
                     action = "Finished",
                     label = "Success",

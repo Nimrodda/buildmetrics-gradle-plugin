@@ -6,7 +6,6 @@ import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.nimroddayan.buildmetrics.cache.EventDao
 import com.nimroddayan.buildmetrics.publisher.AnalyticsRestApi
-import com.nimroddayan.buildmetrics.tracker.Event
 import com.nimroddayan.buildmetrics.tracker.EventProcessor
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,16 +21,18 @@ class EventProcessorTest {
     @Mock
     private lateinit var eventDao: EventDao
 
-    private val event = Event("", "", "", "", "", "")
+    private val event = Event.Impl(0, "", "", "", "")
 
     @Test
     fun `track build finished when online calls rest api`() {
-        whenever(analyticsRestApi.trackEvent(any())).thenReturn(true)
+        whenever(analyticsRestApi.trackEvent(any(), any(), any())).thenReturn(true)
 
         val eventProcessor = EventProcessor(
             analyticsRestApi = analyticsRestApi,
             eventDao = eventDao,
-            isOffline = false
+            isOffline = false,
+            trackingId = "foo",
+            clientUid = "uid"
         )
 
         eventProcessor.processEvent(event)
@@ -44,7 +45,9 @@ class EventProcessorTest {
         val eventProcessor = EventProcessor(
             analyticsRestApi = analyticsRestApi,
             eventDao = eventDao,
-            isOffline = true
+            isOffline = true,
+            trackingId = "foo",
+            clientUid = "uid"
         )
 
         eventProcessor.processEvent(event)
@@ -55,12 +58,14 @@ class EventProcessorTest {
 
     @Test
     fun `track build finished call to rest api throws fallback to eventDao`() {
-        whenever(analyticsRestApi.trackEvent(any())).thenThrow(RuntimeException::class.java)
+        whenever(analyticsRestApi.trackEvent(any(), any(), any())).thenThrow(RuntimeException::class.java)
 
         val eventProcessor = EventProcessor(
             analyticsRestApi = analyticsRestApi,
             eventDao = eventDao,
-            isOffline = false
+            isOffline = false,
+            trackingId = "foo",
+            clientUid = "uid"
         )
 
         eventProcessor.processEvent(event)
@@ -70,12 +75,14 @@ class EventProcessorTest {
 
     @Test
     fun `track build finished call to rest api fails fallback to eventDao`() {
-        whenever(analyticsRestApi.trackEvent(any())).thenReturn(false)
+        whenever(analyticsRestApi.trackEvent(any(), any(), any())).thenReturn(false)
 
         val eventProcessor = EventProcessor(
             analyticsRestApi = analyticsRestApi,
             eventDao = eventDao,
-            isOffline = false
+            isOffline = false,
+            trackingId = "foo",
+            clientUid = "uid"
         )
 
         eventProcessor.processEvent(event)

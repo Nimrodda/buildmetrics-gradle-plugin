@@ -1,11 +1,13 @@
 package com.nimroddayan.buildmetrics.plugin
 
-import com.nimroddayan.buildmetrics.cache.SQLiteEventDao
+import com.nimroddayan.buildmetrics.cache.ClientDaoSqlite
+import com.nimroddayan.buildmetrics.cache.DatabaseHelper
+import com.nimroddayan.buildmetrics.cache.EventDaoSqlite
+import com.nimroddayan.buildmetrics.clientid.ClientManager
 import com.nimroddayan.buildmetrics.plugin.Injection.okHttpClient
 import com.nimroddayan.buildmetrics.publisher.AnalyticsRestApi
 import com.nimroddayan.buildmetrics.publisher.google.GoogleAnalyticsRestApi
 import com.nimroddayan.buildmetrics.tracker.BuildDurationTracker
-import com.nimroddayan.buildmetrics.tracker.User
 import mu.KotlinLogging
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -18,14 +20,16 @@ private val log = KotlinLogging.logger {}
 class BuildMetricsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.extensions.create("buildMetrics", BuildMetricsExtension::class.java)
+        val dbHelper = DatabaseHelper()
+        val clientManager = ClientManager(ClientDaoSqlite(dbHelper.database.clientQueries))
 
         log.debug { "Registering build listener" }
         project.gradle.addBuildListener(
             BuildDurationTracker(
                 extension,
-                User("555", "Nimrod"),
                 GoogleAnalyticsRestApi(okHttpClient),
-                SQLiteEventDao()
+                EventDaoSqlite(dbHelper.database.eventQueries),
+                clientManager.getOrCreateClient().id
             )
         )
     }

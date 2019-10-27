@@ -1,5 +1,6 @@
 package com.nimroddayan.buildmetrics.tracker
 
+import com.nimroddayan.buildmetrics.Event
 import com.nimroddayan.buildmetrics.cache.EventDao
 import com.nimroddayan.buildmetrics.plugin.BuildMetricsExtension
 import com.nimroddayan.buildmetrics.publisher.AnalyticsRestApi
@@ -17,9 +18,9 @@ private val log = KotlinLogging.logger {}
 
 class BuildDurationTracker(
     private val extension: BuildMetricsExtension,
-    private val user: User,
     private val analyticsRestApi: AnalyticsRestApi,
-    private val eventDao: EventDao
+    private val eventDao: EventDao,
+    private val clientUid: String
 ) : BuildListener {
     private var buildStart: Long = 0
     private lateinit var eventProcessor: EventProcessor
@@ -46,6 +47,8 @@ class BuildDurationTracker(
         eventProcessor = EventProcessor(
             gradle.startParameter.isOffline,
             eventDao,
+            clientUid,
+            trackingId,
             extension.analyticsRestApi.getOrElse(analyticsRestApi)
         )
 
@@ -57,9 +60,8 @@ class BuildDurationTracker(
 
     @Suppress("MemberVisibilityCanBePrivate")
     fun trackBuildFinished(isSuccessful: Boolean, buildDuration: Long) {
-        val event = Event(
-            trackingId = trackingId,
-            uid = user.uid,
+        val event = Event.Impl(
+            id = -1, // ID ignored
             category = "Build",
             action = "Finished",
             label = if (isSuccessful) "Success" else "Failure",
