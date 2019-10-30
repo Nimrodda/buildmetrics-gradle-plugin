@@ -1,10 +1,15 @@
 CREATE TABLE IF NOT EXISTS client (
-  id TEXT NOT NULL PRIMARY KEY
+  id TEXT NOT NULL PRIMARY KEY,
+  os_name TEXT NOT NULL,
+  os_version TEXT NOT NULL,
+  cpu TEXT NOT NULL,
+  ram INTEGER NOT NULL,
+  model TEXT NOT NULL
 );
 
 insert:
-INSERT INTO client (id)
-VALUES (?);
+INSERT INTO client (id, os_name, os_version, cpu, ram, model)
+VALUES (?, ?, ?, ?, ?, ?);
 
 selectFirst:
 SELECT * FROM client LIMIT 1;

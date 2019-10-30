@@ -13,11 +13,18 @@ class ClientDaoSqlite(
     private val clientQueries: ClientQueries
 ) : ClientDao {
     override fun insert(client: Client) {
-        clientQueries.insert(id = client.id)
+        clientQueries.insert(
+            id = client.id,
+            os_name = client.os_name,
+            os_version = client.os_version,
+            cpu = client.cpu,
+            ram = client.ram,
+            model = client.model
+        )
     }
 
     override fun selectFirst(): Client {
-        return Client.Impl(id = clientQueries.selectFirst().executeAsOne())
+        return clientQueries.selectFirst().executeAsOne()
     }
 
     override fun deleteAll() {

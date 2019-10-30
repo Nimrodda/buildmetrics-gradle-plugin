@@ -3,6 +3,7 @@ package com.nimroddayan.buildmetrics.clientid
 import com.nimroddayan.buildmetrics.Client
 import com.nimroddayan.buildmetrics.cache.ClientDao
 import mu.KotlinLogging
+import oshi.SystemInfo
 import java.util.UUID
 
 private val log = KotlinLogging.logger {}
@@ -15,7 +16,15 @@ class ClientManager(
             clientDao.selectFirst()
         } catch (e: Exception) {
             log.debug(e) { "Client doesn't exist, creating..." }
-            val client = Client.Impl(UUID.randomUUID().toString())
+            val systemInfo = SystemInfo()
+            val client = Client.Impl(
+                id = UUID.randomUUID().toString(),
+                os_name = SystemInfo.getCurrentPlatformEnum().name,
+                os_version = systemInfo.operatingSystem.versionInfo.version ?: "",
+                ram = systemInfo.hardware.memory.total,
+                cpu = systemInfo.hardware.processor.processorIdentifier.name,
+                model = systemInfo.hardware.computerSystem.model
+            )
             log.info { "Created client: $client" }
             try {
                 log.debug { "Storing client in local database" }
