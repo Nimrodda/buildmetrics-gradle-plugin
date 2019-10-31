@@ -1,7 +1,7 @@
 package com.nimroddayan.buildmetrics.publisher.google
 
-import com.nimroddayan.buildmetrics.Event
-import com.nimroddayan.buildmetrics.publisher.AnalyticsRestApi
+import com.nimroddayan.buildmetrics.publisher.BuildFinishedEvent
+import com.nimroddayan.buildmetrics.publisher.Client
 import mu.KotlinLogging
 import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.gradle.api.provider.Property
 
 private val PLAIN_TEXT = "plain/text".toMediaType()
 
@@ -20,27 +21,30 @@ private val ANALYTICS_URL = HttpUrl.Builder()
 
 private val log = KotlinLogging.logger {}
 
+/**
+ * Google Analytics REST API client for sending build finished events
+ *
+ * https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
+ */
 class GoogleAnalyticsRestApi(
     private val httpClient: OkHttpClient,
+    @Suppress("UnstableApiUsage") private val trackingId: Property<String>,
     private val url: HttpUrl = ANALYTICS_URL
-) : AnalyticsRestApi {
-
-    override fun trackEvent(trackingId: String, uid: String, event: Event): Boolean {
+) {
+    fun trackBuildFinishedEvent(client: Client, event: BuildFinishedEvent) {
         val request = Request.Builder()
             .url(url)
             .header("User-Agent", "")
-            .post(event.toRequestBody(trackingId, uid))
+            .post(event.toRequestBody(trackingId.get(), client.id))
             .build()
 
         log.debug { "Sending analytics to Google" }
         val response = httpClient.newCall(request).execute()
-        val isSuccess = response.isSuccessful
         response.close()
-        return isSuccess
     }
 }
 
-fun Event.toRequestBody(trackingId: String, uid: String): RequestBody {
-    return "v=1&tid=$trackingId&uid=$uid&t=event&ec=$category&ea=$action&el=$label&ev=$value"
+fun BuildFinishedEvent.toRequestBody(trackingId: String, clientId: String): RequestBody {
+    return "v=1&tid=$trackingId&cid=$clientId&t=event&ec=Build&ea=Finished&el=isSuccess:$isSuccess,ram:$freeRam&ev=$durationSeconds"
         .toRequestBody(PLAIN_TEXT)
 }

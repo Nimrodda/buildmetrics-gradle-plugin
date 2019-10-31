@@ -1,8 +1,9 @@
 package com.nimroddayan.buildmetrics.tracker
 
-import com.nimroddayan.buildmetrics.Event
 import com.nimroddayan.buildmetrics.cache.EventDao
-import com.nimroddayan.buildmetrics.publisher.AnalyticsRestApi
+import com.nimroddayan.buildmetrics.publisher.BuildFinishedEvent
+import com.nimroddayan.buildmetrics.publisher.BuildMetricsListener
+import com.nimroddayan.buildmetrics.publisher.Client
 import mu.KotlinLogging
 
 private val log = KotlinLogging.logger {}
@@ -10,16 +11,17 @@ private val log = KotlinLogging.logger {}
 class EventProcessor(
     private val isOffline: Boolean,
     private val eventDao: EventDao,
-    private val clientUid: String,
-    private val trackingId: String,
-    private val analyticsRestApi: AnalyticsRestApi
+    private val client: Client,
+    private val listeners: List<BuildMetricsListener>
 ) {
-    fun processEvent(event: Event) {
+    fun processEvent(event: BuildFinishedEvent) {
         log.debug { "Processing event: $event" }
         try {
-            if (isOffline || !analyticsRestApi.trackEvent(trackingId, clientUid, event)) {
+            if (isOffline) {
                 log.debug { "User in offline or request failed, caching analytics in local database" }
                 eventDao.insert(event)
+            } else {
+                listeners.forEach { it.onBuildFinished(client, event) }
             }
         } catch (e: Exception) {
             log.debug(e) { "Failed to track event, attempting to store event in local database" }

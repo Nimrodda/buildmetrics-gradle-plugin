@@ -5,8 +5,11 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import com.nimroddayan.buildmetrics.cache.EventDao
-import com.nimroddayan.buildmetrics.publisher.AnalyticsRestApi
+import com.nimroddayan.buildmetrics.publisher.BuildFinishedEvent
+import com.nimroddayan.buildmetrics.publisher.BuildMetricsListener
 import com.nimroddayan.buildmetrics.tracker.EventProcessor
+import com.nimroddayan.buildmetrics.publisher.Client
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
@@ -16,23 +19,27 @@ import org.mockito.junit.MockitoJUnitRunner
 class EventProcessorTest {
 
     @Mock
-    private lateinit var analyticsRestApi: AnalyticsRestApi
+    private lateinit var buildMetricsListener: BuildMetricsListener
 
     @Mock
     private lateinit var eventDao: EventDao
 
-    private val event = Event.Impl(0, "", "", "", "")
+    private val event = BuildFinishedEvent(true, 0L, 0L, 0L)
+    private val client = Client("", "", "", "", 1L, "")
+    private lateinit var listeners: List<BuildMetricsListener>
+
+    @Before
+    fun setup() {
+        listeners = listOf(buildMetricsListener)
+    }
 
     @Test
-    fun `track build finished when online calls rest api`() {
-        whenever(analyticsRestApi.trackEvent(any(), any(), any())).thenReturn(true)
-
+    fun `track build finished when online calls listeners successfully`() {
         val eventProcessor = EventProcessor(
-            analyticsRestApi = analyticsRestApi,
+            listeners = listeners,
             eventDao = eventDao,
             isOffline = false,
-            trackingId = "foo",
-            clientUid = "uid"
+            client = client
         )
 
         eventProcessor.processEvent(event)
@@ -41,48 +48,29 @@ class EventProcessorTest {
     }
 
     @Test
-    fun `track build finished when offline calls eventDao`() {
+    fun `track build finished should cache locally when offline`() {
         val eventProcessor = EventProcessor(
-            analyticsRestApi = analyticsRestApi,
+            listeners = listeners,
             eventDao = eventDao,
             isOffline = true,
-            trackingId = "foo",
-            clientUid = "uid"
+            client = client
         )
 
         eventProcessor.processEvent(event)
 
         verify(eventDao).insert(any())
-        verifyZeroInteractions(analyticsRestApi)
+        verifyZeroInteractions(buildMetricsListener)
     }
 
     @Test
-    fun `track build finished call to rest api throws fallback to eventDao`() {
-        whenever(analyticsRestApi.trackEvent(any(), any(), any())).thenThrow(RuntimeException::class.java)
+    fun `track build finished calls listeners throws exception should fallback to local cache`() {
+        whenever(buildMetricsListener.onBuildFinished(any(), any())).thenThrow(RuntimeException::class.java)
 
         val eventProcessor = EventProcessor(
-            analyticsRestApi = analyticsRestApi,
+            listeners = listeners,
             eventDao = eventDao,
             isOffline = false,
-            trackingId = "foo",
-            clientUid = "uid"
-        )
-
-        eventProcessor.processEvent(event)
-
-        verify(eventDao).insert(any())
-    }
-
-    @Test
-    fun `track build finished call to rest api fails fallback to eventDao`() {
-        whenever(analyticsRestApi.trackEvent(any(), any(), any())).thenReturn(false)
-
-        val eventProcessor = EventProcessor(
-            analyticsRestApi = analyticsRestApi,
-            eventDao = eventDao,
-            isOffline = false,
-            trackingId = "foo",
-            clientUid = "uid"
+            client = client
         )
 
         eventProcessor.processEvent(event)

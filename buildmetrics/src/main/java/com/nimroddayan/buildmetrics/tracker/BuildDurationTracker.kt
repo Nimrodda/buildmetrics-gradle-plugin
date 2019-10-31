@@ -1,30 +1,29 @@
 package com.nimroddayan.buildmetrics.tracker
 
-import com.nimroddayan.buildmetrics.Event
 import com.nimroddayan.buildmetrics.cache.EventDao
-import com.nimroddayan.buildmetrics.plugin.BuildMetricsExtension
-import com.nimroddayan.buildmetrics.publisher.AnalyticsRestApi
+import com.nimroddayan.buildmetrics.publisher.BuildFinishedEvent
+import com.nimroddayan.buildmetrics.publisher.BuildMetricsListener
+import com.nimroddayan.buildmetrics.publisher.Client
 import mu.KotlinLogging
 import org.gradle.BuildListener
 import org.gradle.BuildResult
-import org.gradle.api.InvalidUserDataException
 import org.gradle.api.initialization.Settings
 import org.gradle.api.internal.GradleInternal
 import org.gradle.api.invocation.Gradle
 import org.gradle.internal.scan.time.BuildScanBuildStartedTime
+import oshi.SystemInfo
 import java.util.concurrent.TimeUnit
 
 private val log = KotlinLogging.logger {}
 
 class BuildDurationTracker(
-    private val extension: BuildMetricsExtension,
-    private val analyticsRestApi: AnalyticsRestApi,
+    private val listeners: List<BuildMetricsListener>,
     private val eventDao: EventDao,
-    private val clientUid: String
+    private val client: Client,
+    private val systemInfo: SystemInfo
 ) : BuildListener {
     private var buildStart: Long = 0
     private lateinit var eventProcessor: EventProcessor
-    private lateinit var trackingId: String
 
     override fun settingsEvaluated(gradle: Settings) {
     }
@@ -42,14 +41,11 @@ class BuildDurationTracker(
     }
 
     override fun projectsEvaluated(gradle: Gradle) {
-        trackingId = extension.trackingId.orNull ?: throw InvalidUserDataException("Missing trackingId in extension")
-
         eventProcessor = EventProcessor(
             gradle.startParameter.isOffline,
             eventDao,
-            clientUid,
-            trackingId,
-            extension.analyticsRestApi.getOrElse(analyticsRestApi)
+            client,
+            listeners
         )
 
         buildStart = (gradle as GradleInternal)
@@ -60,12 +56,10 @@ class BuildDurationTracker(
 
     @Suppress("MemberVisibilityCanBePrivate")
     fun trackBuildFinished(isSuccessful: Boolean, buildDuration: Long) {
-        val event = Event.Impl(
-            id = -1, // ID ignored
-            category = "Build",
-            action = "Finished",
-            label = if (isSuccessful) "Success" else "Failure",
-            value = "$buildDuration"
+        val event = BuildFinishedEvent(
+            freeRam = systemInfo.hardware.memory.available,
+            isSuccess = isSuccessful,
+            durationSeconds = buildDuration
         )
         eventProcessor.processEvent(event)
     }

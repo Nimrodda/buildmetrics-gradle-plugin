@@ -1,13 +1,12 @@
 CREATE TABLE IF NOT EXISTS event (
-  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  category TEXT NOT NULL,
-  action TEXT NOT NULL,
-  label TEXT NOT NULL,
-  value TEXT NOT NULL
+  timestamp INTEGER NOT NULL PRIMARY KEY,
+  is_success INTEGER AS Boolean DEFAULT 0 NOT NULL,
+  duration_seconds INTEGER NOT NULL,
+  free_ram INTEGER NOT NULL
 );
 
 insert:
-INSERT INTO event (category, action, label, value)
+INSERT INTO event (timestamp, is_success, duration_seconds, free_ram)
 VALUES (?, ?, ?, ?);
 
 selectAll:
@@ -15,7 +14,7 @@ SELECT * FROM event;
 
 delete:
 DELETE FROM event
-WHERE id = ?;
+WHERE timestamp = ?;
 
 purge:
 DELETE FROM event;

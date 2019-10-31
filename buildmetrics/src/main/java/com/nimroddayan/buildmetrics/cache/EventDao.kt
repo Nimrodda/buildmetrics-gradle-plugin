@@ -1,33 +1,40 @@
 package com.nimroddayan.buildmetrics.cache
 
 import com.nimroddayan.buildmetrics.EventQueries
-import com.nimroddayan.buildmetrics.Event
+import com.nimroddayan.buildmetrics.publisher.BuildFinishedEvent
 
 interface EventDao {
-    fun insert(event: Event)
-    fun selectAll(): List<Event>
-    fun delete(id: Long)
+    fun insert(event: BuildFinishedEvent)
+    fun selectAll(): List<BuildFinishedEvent>
+    fun delete(timestamp: Long)
     fun purge()
 }
 
 class EventDaoSqlite(
     private val eventsQueries: EventQueries
 ) : EventDao {
-    override fun insert(event: Event) {
+    override fun insert(event: BuildFinishedEvent) {
         eventsQueries.insert(
-            category = event.category,
-            action = event.action,
-            label = event.label,
-            value = event.value
+            timestamp = System.currentTimeMillis(),
+            is_success = event.isSuccess,
+            duration_seconds = event.durationSeconds,
+            free_ram = event.freeRam
         )
     }
 
-    override fun selectAll(): List<Event> {
-        return eventsQueries.selectAll().executeAsList()
+    override fun selectAll(): List<BuildFinishedEvent> {
+        return eventsQueries.selectAll { timestamp, is_success, duration_seconds, free_ram ->
+            BuildFinishedEvent(
+                timestamp = timestamp,
+                isSuccess = is_success,
+                durationSeconds = duration_seconds,
+                freeRam = free_ram
+            )
+        }.executeAsList()
     }
 
-    override fun delete(id: Long) {
-        eventsQueries.delete(id)
+    override fun delete(timestamp: Long) {
+        eventsQueries.delete(timestamp)
     }
 
     override fun purge() {
