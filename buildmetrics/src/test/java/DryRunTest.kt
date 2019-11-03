@@ -3,7 +3,6 @@ package com.nimroddayan.buildmetrics
 import org.gradle.testfixtures.ProjectBuilder
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.UnexpectedBuildFailure
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -23,32 +22,12 @@ class DryRunTest {
 
     }
 
-    @Test(expected = UnexpectedBuildFailure::class)
-    fun `missing tracking id in extension throws exception`() {
-        buildFile.writeText(
-            """
-            plugins {
-                id "com.nimroddayan.gradle.build.metrics"
-            }
-            
-            buildMetrics {
-            }
-        """
-        )
-
-        runGradle()
-    }
-
     @Test
     fun `run build successfully track`() {
         buildFile.writeText(
             """
             plugins {
                 id "com.nimroddayan.gradle.build.metrics"
-            }
-            
-            buildMetrics {
-                trackingId = "foo"
             }
         """
         )
