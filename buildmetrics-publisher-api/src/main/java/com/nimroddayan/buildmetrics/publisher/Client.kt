@@ -5,6 +5,6 @@ data class Client(
     val osName: String,
     val osVersion: String,
     val cpu: String,
-    val ram: Long,
+    val ram: String,
     val model: String
 )

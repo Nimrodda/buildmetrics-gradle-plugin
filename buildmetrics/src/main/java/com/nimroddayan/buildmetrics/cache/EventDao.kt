@@ -18,17 +18,19 @@ class EventDaoSqlite(
             timestamp = System.currentTimeMillis(),
             is_success = event.isSuccess,
             duration_seconds = event.durationSeconds,
-            free_ram = event.freeRam
+            free_ram = event.freeRam,
+            swap_ram = event.swapRam
         )
     }
 
     override fun selectAll(): List<BuildFinishedEvent> {
-        return eventsQueries.selectAll { timestamp, is_success, duration_seconds, free_ram ->
+        return eventsQueries.selectAll { timestamp, isSuccess, durationSeconds, freeRam, swapRam ->
             BuildFinishedEvent(
                 timestamp = timestamp,
-                isSuccess = is_success,
-                durationSeconds = duration_seconds,
-                freeRam = free_ram
+                isSuccess = isSuccess,
+                durationSeconds = durationSeconds,
+                freeRam = freeRam,
+                swapRam = swapRam
             )
         }.executeAsList()
     }

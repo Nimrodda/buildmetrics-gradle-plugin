@@ -24,8 +24,8 @@ class EventProcessorTest {
     @Mock
     private lateinit var eventDao: EventDao
 
-    private val event = BuildFinishedEvent(true, 0L, 0L, 0L)
-    private val client = Client("", "", "", "", 1L, "")
+    private val event = BuildFinishedEvent(true, 0L, "", "", 0L)
+    private val client = Client("", "", "", "", "", "")
     private lateinit var listeners: List<BuildMetricsListener>
 
     @Before
@@ -34,7 +34,7 @@ class EventProcessorTest {
     }
 
     @Test
-    fun `track build finished when online calls listeners successfully`() {
+    fun `process event while online calls listeners successfully`() {
         val eventProcessor = EventProcessor(
             listeners = listeners,
             eventDao = eventDao,
@@ -48,7 +48,7 @@ class EventProcessorTest {
     }
 
     @Test
-    fun `track build finished should cache locally when offline`() {
+    fun `process event should cache locally when offline`() {
         val eventProcessor = EventProcessor(
             listeners = listeners,
             eventDao = eventDao,
@@ -63,11 +63,25 @@ class EventProcessorTest {
     }
 
     @Test
-    fun `track build finished calls listeners throws exception should fallback to local cache`() {
+    fun `process event calls listeners throws exception should fallback to local cache`() {
         whenever(buildMetricsListener.onBuildFinished(any(), any())).thenThrow(RuntimeException::class.java)
 
         val eventProcessor = EventProcessor(
             listeners = listeners,
+            eventDao = eventDao,
+            isOffline = false,
+            client = client
+        )
+
+        eventProcessor.processEvent(event)
+
+        verify(eventDao).insert(any())
+    }
+
+    @Test
+    fun `process event no listeners registered should fallback to local cache`() {
+        val eventProcessor = EventProcessor(
+            listeners = emptyList(),
             eventDao = eventDao,
             isOffline = false,
             client = client

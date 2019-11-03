@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS client (
   os_name TEXT NOT NULL,
   os_version TEXT NOT NULL,
   cpu TEXT NOT NULL,
-  ram INTEGER NOT NULL,
+  ram TEXT NOT NULL,
   model TEXT NOT NULL
 );
 

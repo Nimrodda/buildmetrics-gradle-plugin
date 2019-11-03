@@ -3,6 +3,7 @@ package com.nimroddayan.buildmetrics.clientid
 import com.nimroddayan.buildmetrics.cache.ClientDao
 import com.nimroddayan.buildmetrics.publisher.Client
 import mu.KotlinLogging
+import org.apache.commons.io.FileUtils
 import oshi.SystemInfo
 import java.util.UUID
 
@@ -21,7 +22,7 @@ class ClientManager(
                 id = UUID.randomUUID().toString(),
                 osName = SystemInfo.getCurrentPlatformEnum().name,
                 osVersion = systemInfo.operatingSystem.versionInfo.version ?: "",
-                ram = systemInfo.hardware.memory.total,
+                ram = FileUtils.byteCountToDisplaySize(systemInfo.hardware.memory.total),
                 cpu = systemInfo.hardware.processor.processorIdentifier.name,
                 model = systemInfo.hardware.computerSystem.model
             )

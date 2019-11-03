@@ -28,18 +28,19 @@ class GoogleAnalyticsRestApiTest {
         val url = server.url("/collect/")
         val clientId = "clientId"
         val isSuccess = true
-        val freeRam = 12L
+        val freeRam = "12 GB"
         val durationSeconds = 14L
-
+        val swapRam = "2 GB"
         GoogleAnalyticsRestApi(OkHttpClient(), trackingId, url)
             .trackBuildFinishedEvent(
-                client = Client(clientId, "osname", "osversion", "cpu", 12L, "model"),
-                event = BuildFinishedEvent(isSuccess, durationSeconds, freeRam, 54L)
+                client = Client(clientId, "osname", "osversion", "cpu", "16 GB", "model"),
+                event = BuildFinishedEvent(isSuccess, durationSeconds, freeRam, swapRam)
             )
 
         val request = server.takeRequest()
 
         assertThat(request.body.readUtf8())
-            .isEqualTo("v=1&tid=$trackingId&cid=$clientId&t=event&ec=Build&ea=Finished&el=isSuccess:$isSuccess,ram:$freeRam&ev=$durationSeconds")
+            .isEqualTo("v=1&tid=$trackingId&cid=$clientId&t=event&ec=Build&" +
+                "ea=Finished&el=isSuccess:$isSuccess,ram:$freeRam,swap:$swapRam&ev=$durationSeconds")
     }
 }

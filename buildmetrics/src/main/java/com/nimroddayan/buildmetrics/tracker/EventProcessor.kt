@@ -17,8 +17,8 @@ class EventProcessor(
     fun processEvent(event: BuildFinishedEvent) {
         log.debug { "Processing event: $event" }
         try {
-            if (isOffline) {
-                log.debug { "User in offline or request failed, caching analytics in local database" }
+            if (isOffline || listeners.isEmpty()) {
+                log.debug { "User is offline or no listeners registered, caching analytics in local database" }
                 eventDao.insert(event)
             } else {
                 listeners.forEach { it.onBuildFinished(client, event) }

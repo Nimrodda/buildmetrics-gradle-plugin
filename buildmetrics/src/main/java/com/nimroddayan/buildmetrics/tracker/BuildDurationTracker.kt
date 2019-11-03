@@ -5,6 +5,7 @@ import com.nimroddayan.buildmetrics.publisher.BuildFinishedEvent
 import com.nimroddayan.buildmetrics.publisher.BuildMetricsListener
 import com.nimroddayan.buildmetrics.publisher.Client
 import mu.KotlinLogging
+import org.apache.commons.io.FileUtils
 import org.gradle.BuildListener
 import org.gradle.BuildResult
 import org.gradle.api.initialization.Settings
@@ -57,9 +58,10 @@ class BuildDurationTracker(
     @Suppress("MemberVisibilityCanBePrivate")
     fun trackBuildFinished(isSuccessful: Boolean, buildDuration: Long) {
         val event = BuildFinishedEvent(
-            freeRam = systemInfo.hardware.memory.available,
+            freeRam = FileUtils.byteCountToDisplaySize(systemInfo.hardware.memory.available),
             isSuccess = isSuccessful,
-            durationSeconds = buildDuration
+            durationSeconds = buildDuration,
+            swapRam = FileUtils.byteCountToDisplaySize(systemInfo.hardware.memory.virtualMemory.swapUsed)
         )
         eventProcessor.processEvent(event)
     }
