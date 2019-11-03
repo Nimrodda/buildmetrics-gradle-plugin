@@ -6,5 +6,6 @@ data class Client(
     val osVersion: String,
     val cpu: String,
     val ram: String,
-    val model: String
+    val model: String,
+    val synced: Boolean = false
 )

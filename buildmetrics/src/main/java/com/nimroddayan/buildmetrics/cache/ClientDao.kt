@@ -24,14 +24,15 @@ class ClientDaoSqlite(
     }
 
     override fun selectFirst(): Client {
-        return clientQueries.selectFirst { id, os_name, os_version, cpu, ram, model ->
+        return clientQueries.selectFirst { id, os_name, os_version, cpu, ram, model, synced ->
             Client(
                 id = id,
                 osName = os_name,
                 osVersion = os_version,
                 cpu = cpu,
                 ram = ram,
-                model = model
+                model = model,
+                synced = synced
             )
         }.executeAsOne()
     }

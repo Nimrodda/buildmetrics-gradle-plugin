@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS client (
   os_version TEXT NOT NULL,
   cpu TEXT NOT NULL,
   ram TEXT NOT NULL,
-  model TEXT NOT NULL
+  model TEXT NOT NULL,
+  synced INTEGER AS Boolean NOT NULL DEFAULT 0
 );
 
 insert:
@@ -16,3 +17,6 @@ SELECT * FROM client LIMIT 1;
 
 deleteAll:
 DELETE FROM client;
+
+markSynced:
+UPDATE client SET synced = 1;
