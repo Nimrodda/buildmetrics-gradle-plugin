@@ -1,6 +1,7 @@
 package com.nimroddayan.buildmetrics.clientid
 
 import com.nimroddayan.buildmetrics.cache.ClientDao
+import com.nimroddayan.buildmetrics.publisher.BuildMetricsListener
 import com.nimroddayan.buildmetrics.publisher.Client
 import mu.KotlinLogging
 import org.apache.commons.io.FileUtils
@@ -11,7 +12,8 @@ private val log = KotlinLogging.logger {}
 
 class ClientManager(
     private val clientDao: ClientDao,
-    private val systemInfo: SystemInfo
+    private val systemInfo: SystemInfo,
+    private val buildMetricsListeners: List<BuildMetricsListener>
 ) {
     fun getOrCreateClient(): Client {
         return try {
@@ -31,6 +33,12 @@ class ClientManager(
                 log.debug { "Storing client in local database" }
                 clientDao.deleteAll()
                 clientDao.insert(client)
+                log.debug { "Notifying listeners that a client has been created" }
+                try {
+                    buildMetricsListeners.forEach { it.onClientCreated(client) }
+                } catch (e: Exception) {
+                    log.debug { "Error notifying listeners that a client was created" }
+                }
                 client
             } catch (e: Exception) {
                 log.debug(e) { "Failed to store client in local database, returning in-memory client" }

@@ -17,16 +17,18 @@ private val log = KotlinLogging.logger {}
 class BuildMetricsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val listeners = mutableListOf<BuildMetricsListener>()
+        log.info { "Registering all build metrics listeners" }
         project.plugins.all {
             if (it is BuildMetricsListener) {
+                log.debug { "Registering listener: ${it::class.simpleName}" }
                 listeners += it
             }
         }
         val systemInfo = SystemInfo()
         val dbHelper = DatabaseHelper()
-        val clientManager = ClientManager(ClientDaoSqlite(dbHelper.database.clientQueries), systemInfo)
+        val clientManager = ClientManager(ClientDaoSqlite(dbHelper.database.clientQueries), systemInfo, listeners)
 
-        log.debug { "Registering build listener" }
+        log.info { "Registering build listener" }
         project.gradle.addBuildListener(
             BuildDurationTracker(
                 listeners,

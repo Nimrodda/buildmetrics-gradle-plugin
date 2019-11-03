@@ -14,6 +14,10 @@ import org.gradle.api.provider.Property
 private val log = KotlinLogging.logger {}
 
 class BuildMetricsGoogleAnalyticsPlugin : Plugin<Project>, BuildMetricsListener {
+    override fun onClientCreated(client: Client) {
+        log.info { "Google Analytics doesn't support user profiles" }
+    }
+
     private lateinit var googleAnalyticsRestApi: GoogleAnalyticsRestApi
 
     override fun onBuildFinished(client: Client, event: BuildFinishedEvent) {
