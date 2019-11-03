@@ -17,7 +17,11 @@ class ClientManager(
 ) {
     fun getOrCreateClient(): Client {
         return try {
-            clientDao.selectFirst()
+            val client = clientDao.selectFirst()
+            if (!client.synced) {
+                notifyClientCreated(client)
+            }
+            client
         } catch (e: Exception) {
             log.debug(e) { "Client doesn't exist, creating..." }
             val client = Client(
@@ -33,17 +37,22 @@ class ClientManager(
                 log.debug { "Storing client in local database" }
                 clientDao.deleteAll()
                 clientDao.insert(client)
-                log.debug { "Notifying listeners that a client has been created" }
-                try {
-                    buildMetricsListeners.forEach { it.onClientCreated(client) }
-                } catch (e: Exception) {
-                    log.debug { "Error notifying listeners that a client was created" }
-                }
+                notifyClientCreated(client)
                 client
             } catch (e: Exception) {
                 log.debug(e) { "Failed to store client in local database, returning in-memory client" }
                 client
             }
+        }
+    }
+
+    private fun notifyClientCreated(client: Client) {
+        try {
+            log.debug { "Notifying listeners that a client has been created" }
+            buildMetricsListeners.forEach { it.onClientCreated(client) }
+            clientDao.markSynced()
+        } catch (e: Exception) {
+            log.debug { "Error notifying listeners that a client was created" }
         }
     }
 }

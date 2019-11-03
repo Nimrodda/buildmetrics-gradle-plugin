@@ -7,6 +7,7 @@ interface ClientDao {
     fun insert(client: Client)
     fun selectFirst(): Client
     fun deleteAll()
+    fun markSynced()
 }
 
 class ClientDaoSqlite(
@@ -39,5 +40,9 @@ class ClientDaoSqlite(
 
     override fun deleteAll() {
         clientQueries.deleteAll()
+    }
+
+    override fun markSynced() {
+        clientQueries.markSynced()
     }
 }
