@@ -17,20 +17,26 @@ private val log = KotlinLogging.logger {}
 class BuildMetricsMixpanelPlugin : Plugin<Project>, BuildMetricsListener {
     private lateinit var mixpanelRestApi: MixpanelRestApi
 
+    override fun onClientCreated(client: Client) {
+        log.debug { "Updating user profile with Mixpanel" }
+        mixpanelRestApi.updateProfile(client)
+    }
+
     override fun onBuildFinished(client: Client, event: BuildFinishedEvent) {
         log.debug { "Tracking event with Mixpanel" }
         mixpanelRestApi.trackBuildFinishedEvent(client, event)
     }
 
+    @Suppress("UnstableApiUsage")
     override fun apply(project: Project) {
         project.checkBuildMetricsPluginApplied()
         log.debug { "Initializing Mixpanel Build Metrics plugin" }
-        val extension = project.extensions.create("mixpanel", BuildMetricsGoogleAnalyticsExtension::class.java)
+        val extension = project.extensions.create("mixpanel", BuildMetricsGoogleAnalyticsExtension::class.java, project.objects)
         mixpanelRestApi = MixpanelRestApi(retrofit, moshi, extension.token)
     }
 }
 
 @Suppress("unused", "UnstableApiUsage")
-open class BuildMetricsGoogleAnalyticsExtension(objectFactory: ObjectFactory) {
+abstract class BuildMetricsGoogleAnalyticsExtension(objectFactory: ObjectFactory) {
     val token: Property<String> = objectFactory.property(String::class.java)
 }

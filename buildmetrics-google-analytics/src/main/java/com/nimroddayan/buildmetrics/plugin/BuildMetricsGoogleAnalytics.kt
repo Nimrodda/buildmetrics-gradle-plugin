@@ -25,14 +25,15 @@ class BuildMetricsGoogleAnalyticsPlugin : Plugin<Project>, BuildMetricsListener 
         googleAnalyticsRestApi.trackBuildFinishedEvent(client, event)
     }
 
+    @Suppress("UnstableApiUsage")
     override fun apply(project: Project) {
         log.debug { "Initializing Google Analytics Build Metrics plugin" }
-        val extension = project.extensions.create("googleAnalytics", BuildMetricsGoogleAnalyticsExtension::class.java)
+        val extension = project.extensions.create("googleAnalytics", BuildMetricsGoogleAnalyticsExtension::class.java, project.objects)
         googleAnalyticsRestApi = GoogleAnalyticsRestApi(okHttpClient, extension.trackingId)
     }
 }
 
 @Suppress("unused", "UnstableApiUsage")
-open class BuildMetricsGoogleAnalyticsExtension(objectFactory: ObjectFactory) {
+abstract class BuildMetricsGoogleAnalyticsExtension(objectFactory: ObjectFactory) {
     val trackingId: Property<String> = objectFactory.property(String::class.java)
 }
