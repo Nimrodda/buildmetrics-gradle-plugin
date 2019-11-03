@@ -17,3 +17,4 @@ pluginManagement {
 include ':buildmetrics'
 include ':buildmetrics-publisher-api'
 include ':buildmetrics-google-analytics'
+include ':buildmetrics-mixpanel'

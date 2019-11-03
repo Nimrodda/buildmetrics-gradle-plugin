@@ -1,0 +1,43 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id "java-gradle-plugin"
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+dependencies {
+    implementation project(":buildmetrics-publisher-api")
+    implementation "com.squareup.okhttp3:okhttp:4.2.2"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.2.2"
+    implementation "io.github.microutils:kotlin-logging:1.7.6"
+    implementation "com.squareup.moshi:moshi1.9.1"
+    implementation "com.squareup.moshi:moshi-kotlin:1.9.1"
+    implementation "com.squareup.retrofit2:retrofit:2.6.2"
+
+    testImplementation "junit:junit:4.12"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.2.1")
+    testImplementation 'com.google.truth:truth:1.0'
+}
+
+gradlePlugin {
+    plugins {
+        buildMetricsGoogleAnalytics {
+            id = "com.nimroddayan.buildmetrics.mixpanel"
+            implementationClass = "com.nimroddayan.buildmetrics.plugin.BuildMetricsMixpanelPlugin"
+        }
+    }
+}
