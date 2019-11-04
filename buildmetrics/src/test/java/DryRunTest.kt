@@ -27,7 +27,7 @@ class DryRunTest {
         buildFile.writeText(
             """
             plugins {
-                id "com.nimroddayan.gradle.build.metrics"
+                id "com.nimroddayan.buildmetrics"
             }
         """
         )
@@ -39,7 +39,7 @@ class DryRunTest {
     fun `apply plugin successfully`() {
         val project = ProjectBuilder.builder().build()
 
-        project.pluginManager.apply("com.nimroddayan.gradle.build.metrics")
+        project.pluginManager.apply("com.nimroddayan.buildmetrics")
     }
 
     private fun runGradle(): BuildResult {

@@ -25,7 +25,7 @@ dependencies {
 gradlePlugin {
     plugins {
         buildMetrics {
-            id = "com.nimroddayan.gradle.build.metrics"
+            id = "com.nimroddayan.buildmetrics"
             implementationClass = "com.nimroddayan.buildmetrics.plugin.BuildMetricsPlugin"
         }
     }
