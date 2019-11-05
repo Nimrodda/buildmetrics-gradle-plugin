@@ -1,6 +1,7 @@
 plugins {
     id "org.jetbrains.kotlin.jvm"
     id "java-gradle-plugin"
+    id "maven-publish"
     id "com.squareup.sqldelight" version "1.2.0"
 }
 
@@ -21,6 +22,9 @@ dependencies {
     testImplementation("com.squareup.okhttp3:mockwebserver:4.2.1")
     testImplementation 'com.google.truth:truth:1.0'
 }
+
+group 'com.nimroddayan.buildmetrics'
+version '1.0.0'
 
 gradlePlugin {
     plugins {

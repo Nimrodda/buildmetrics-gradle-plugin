@@ -1,6 +1,10 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
+    id "maven-publish"
 }
+
+group 'com.nimroddayan.buildmetrics'
+version '1.0.0'
 
 repositories {
     jcenter()
@@ -16,4 +20,12 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }
