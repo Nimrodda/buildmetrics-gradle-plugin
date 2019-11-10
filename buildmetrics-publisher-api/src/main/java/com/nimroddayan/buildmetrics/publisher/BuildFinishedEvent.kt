@@ -5,5 +5,6 @@ data class BuildFinishedEvent(
     val durationSeconds: Long,
     val freeRam: String,
     val swapRam: String,
+    val taskNames: String,
     val timestamp: Long = System.currentTimeMillis()
 )

@@ -46,6 +46,6 @@ class GoogleAnalyticsRestApi(
 
 fun BuildFinishedEvent.toRequestBody(trackingId: String, clientId: String): RequestBody {
     return ("v=1&tid=$trackingId&cid=$clientId&t=event&ec=Build&ea=Finished&" +
-        "el=isSuccess:$isSuccess,ram:$freeRam,swap:$swapRam&ev=$durationSeconds")
+        "el=isSuccess:$isSuccess,ram:$freeRam,swap:$swapRam,taskNames:$taskNames&ev=$durationSeconds")
         .toRequestBody(PLAIN_TEXT)
 }

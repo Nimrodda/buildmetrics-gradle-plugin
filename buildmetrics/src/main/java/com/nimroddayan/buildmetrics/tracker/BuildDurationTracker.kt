@@ -25,6 +25,7 @@ class BuildDurationTracker(
 ) : BuildListener {
     private var buildStart: Long = 0L
     private var isTracking = true
+    private val taskNames = mutableListOf<String>()
     private lateinit var eventProcessor: EventProcessor
 
     override fun settingsEvaluated(gradle: Settings) {
@@ -34,7 +35,7 @@ class BuildDurationTracker(
         if (!isTracking) return
 
         val duration = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - buildStart)
-        trackBuildFinished(buildResult.failure == null, duration)
+        trackBuildFinished(buildResult.failure == null, duration, taskNames)
     }
 
     override fun projectsLoaded(gradle: Gradle) {
@@ -44,11 +45,12 @@ class BuildDurationTracker(
     }
 
     override fun projectsEvaluated(gradle: Gradle) {
-        println("Tasks: ${gradle.startParameter.taskNames}")
-        isTracking = gradle.startParameter.taskNames.any { it.contains("assemble") }
+        val taskNames = gradle.startParameter.taskNames
+        isTracking = taskNames.any { it.contains("assemble") }
         if (!isTracking) return
 
         log.info { "Assemble task detected. Tracking build duration..." }
+        this.taskNames += taskNames
         eventProcessor = EventProcessor(
             gradle.startParameter.isOffline,
             eventDao,
@@ -62,12 +64,13 @@ class BuildDurationTracker(
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
-    fun trackBuildFinished(isSuccessful: Boolean, buildDuration: Long) {
+    fun trackBuildFinished(isSuccessful: Boolean, buildDuration: Long, taskNames: List<String>) {
         val event = BuildFinishedEvent(
             freeRam = FileUtils.byteCountToDisplaySize(systemInfo.hardware.memory.available),
             isSuccess = isSuccessful,
             durationSeconds = buildDuration,
-            swapRam = FileUtils.byteCountToDisplaySize(systemInfo.hardware.memory.virtualMemory.swapUsed)
+            swapRam = FileUtils.byteCountToDisplaySize(systemInfo.hardware.memory.virtualMemory.swapUsed),
+            taskNames = taskNames.joinToString()
         )
         eventProcessor.processEvent(event)
     }

@@ -31,10 +31,11 @@ class GoogleAnalyticsRestApiTest {
         val freeRam = "12 GB"
         val durationSeconds = 14L
         val swapRam = "2 GB"
+        val taskNames = "assemble"
         GoogleAnalyticsRestApi(OkHttpClient(), trackingId, url)
             .trackBuildFinishedEvent(
                 client = Client(clientId, "osname", "osversion", "cpu", "16 GB", "model"),
-                event = BuildFinishedEvent(isSuccess, durationSeconds, freeRam, swapRam)
+                event = BuildFinishedEvent(isSuccess, durationSeconds, freeRam, swapRam, taskNames)
             )
 
         val request = server.takeRequest()

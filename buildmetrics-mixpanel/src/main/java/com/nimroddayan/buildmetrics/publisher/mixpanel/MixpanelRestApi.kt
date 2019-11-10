@@ -61,7 +61,8 @@ fun BuildFinishedEvent.toBuildFinishedEventRequest(distinctId: String, token: St
             buildFreeRam = freeRam,
             buildSwapRam = swapRam,
             distinctId = distinctId,
-            token = token
+            token = token,
+            buildTaskNames = taskNames
         )
     )
 }

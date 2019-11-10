@@ -24,7 +24,7 @@ class EventProcessorTest {
     @Mock
     private lateinit var eventDao: EventDao
 
-    private val event = BuildFinishedEvent(true, 0L, "", "", 0L)
+    private val event = BuildFinishedEvent(true, 0L, "", "", "", 0L)
     private val client = Client("", "", "", "", "", "")
     private lateinit var listeners: List<BuildMetricsListener>
 

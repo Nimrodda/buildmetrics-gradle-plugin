@@ -12,6 +12,7 @@ class BuildFinishedEventProperties(
     @Json(name = "build_duration") val buildDuration: Long,
     @Json(name = "build_free_ram") val buildFreeRam: String,
     @Json(name = "build_swap_ram") val buildSwapRam: String,
+    @Json(name = "build_task_names") val buildTaskNames: String,
     distinctId: String,
     token: String
 ) : MixpanelEventProperties(distinctId, token)

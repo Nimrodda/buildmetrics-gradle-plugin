@@ -3,12 +3,13 @@ CREATE TABLE event (
   is_success INTEGER AS Boolean DEFAULT 0 NOT NULL,
   duration_seconds INTEGER NOT NULL,
   free_ram TEXT NOT NULL,
-  swap_ram TEXT NOT NULL
+  swap_ram TEXT NOT NULL,
+  task_names TEXT NOT NULL
 );
 
 insert:
-INSERT INTO event (timestamp, is_success, duration_seconds, free_ram, swap_ram)
-VALUES (?, ?, ?, ?, ?);
+INSERT INTO event (timestamp, is_success, duration_seconds, free_ram, swap_ram, task_names)
+VALUES (?, ?, ?, ?, ?, ?);
 
 selectAll:
 SELECT * FROM event;
