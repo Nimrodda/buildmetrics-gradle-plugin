@@ -1,7 +1,11 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
     id "java-gradle-plugin"
+    id "maven-publish"
 }
+
+group 'com.nimroddayan.googleanalytics'
+version '1.0.0'
 
 repositories {
     jcenter()
@@ -37,4 +41,9 @@ gradlePlugin {
             implementationClass = "com.nimroddayan.buildmetrics.plugin.BuildMetricsGoogleAnalyticsPlugin"
         }
     }
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }

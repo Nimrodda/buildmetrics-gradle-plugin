@@ -1,7 +1,11 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
     id "java-gradle-plugin"
+    id "maven-publish"
 }
+
+group 'com.nimroddayan.buildmetrics'
+version '1.0.0'
 
 repositories {
     jcenter()
@@ -35,9 +39,14 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        buildMetricsGoogleAnalytics {
+        buildMetricsMixpanel {
             id = "com.nimroddayan.buildmetrics.mixpanel"
             implementationClass = "com.nimroddayan.buildmetrics.plugin.BuildMetricsMixpanelPlugin"
         }
     }
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
