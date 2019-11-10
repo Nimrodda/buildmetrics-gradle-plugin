@@ -23,15 +23,17 @@ class BuildDurationTracker(
     private val client: Client,
     private val systemInfo: SystemInfo
 ) : BuildListener {
-    private var buildStart: Long = 0
+    private var buildStart: Long = 0L
+    private var isTracking = true
     private lateinit var eventProcessor: EventProcessor
 
     override fun settingsEvaluated(gradle: Settings) {
     }
 
     override fun buildFinished(buildResult: BuildResult) {
+        if (!isTracking) return
+
         val duration = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - buildStart)
-        log.debug { "Measured build duration: $duration" }
         trackBuildFinished(buildResult.failure == null, duration)
     }
 
@@ -42,6 +44,11 @@ class BuildDurationTracker(
     }
 
     override fun projectsEvaluated(gradle: Gradle) {
+        println("Tasks: ${gradle.startParameter.taskNames}")
+        isTracking = gradle.startParameter.taskNames.any { it.contains("assemble") }
+        if (!isTracking) return
+
+        log.info { "Assemble task detected. Tracking build duration..." }
         eventProcessor = EventProcessor(
             gradle.startParameter.isOffline,
             eventDao,
@@ -52,7 +59,6 @@ class BuildDurationTracker(
         buildStart = (gradle as GradleInternal)
             .services.get(BuildScanBuildStartedTime::class.java)
             ?.buildStartedTime ?: System.currentTimeMillis()
-        log.debug { "Build started: $buildStart" }
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
