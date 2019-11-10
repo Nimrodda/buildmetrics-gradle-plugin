@@ -46,3 +46,21 @@ class ClientDaoSqlite(
         clientQueries.markSynced()
     }
 }
+
+class ClientDaoNoOp : ClientDao {
+    lateinit var client: Client
+
+    override fun insert(client: Client) {
+    }
+
+    override fun selectFirst(): Client {
+        return client
+    }
+
+    override fun deleteAll() {
+
+    }
+
+    override fun markSynced() {
+    }
+}

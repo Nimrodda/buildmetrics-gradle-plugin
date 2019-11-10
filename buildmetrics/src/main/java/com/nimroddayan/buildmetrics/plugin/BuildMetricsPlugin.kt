@@ -1,8 +1,6 @@
 package com.nimroddayan.buildmetrics.plugin
 
-import com.nimroddayan.buildmetrics.cache.ClientDaoSqlite
-import com.nimroddayan.buildmetrics.cache.DatabaseHelper
-import com.nimroddayan.buildmetrics.cache.EventDaoSqlite
+import com.nimroddayan.buildmetrics.cache.*
 import com.nimroddayan.buildmetrics.clientid.ClientManager
 import com.nimroddayan.buildmetrics.publisher.BuildMetricsListener
 import com.nimroddayan.buildmetrics.tracker.BuildDurationTracker
@@ -24,18 +22,45 @@ class BuildMetricsPlugin : Plugin<Project> {
                 listeners += it
             }
         }
+        val dbHelper: DatabaseHelper? = try {
+            DatabaseHelper()
+        } catch (e: Exception) {
+            log.warn(e) { "Failed to connect to build metrics database" }
+            null
+        }
+        val clientDao = createClientDao(dbHelper)
+        val eventDao = createEventDao(dbHelper)
         val systemInfo = SystemInfo()
-        val dbHelper = DatabaseHelper()
-        val clientManager = ClientManager(ClientDaoSqlite(dbHelper.database.clientQueries), systemInfo, listeners)
+        val clientManager = ClientManager(clientDao, systemInfo, listeners)
 
         log.info { "Registering build listener" }
         project.gradle.addBuildListener(
             BuildDurationTracker(
                 listeners,
-                EventDaoSqlite(dbHelper.database.eventQueries),
+                eventDao,
                 clientManager.getOrCreateClient(),
                 systemInfo
             )
         )
+    }
+
+    private fun createClientDao(dbHelper: DatabaseHelper?): ClientDao {
+        return if (dbHelper != null) {
+            log.debug { "Creating ClientDaoSqlite" }
+            ClientDaoSqlite(dbHelper.database.clientQueries)
+        } else {
+            log.debug { "Creating ClientDaoNoOp" }
+            ClientDaoNoOp()
+        }
+    }
+
+    private fun createEventDao(dbHelper: DatabaseHelper?): EventDao {
+        return if (dbHelper != null) {
+            log.debug { "Creating EventDaoSqlite" }
+            EventDaoSqlite(dbHelper.database.eventQueries)
+        } else {
+            log.debug { "Creating EventDaoNoOp" }
+            EventDaoNoOp()
+        }
     }
 }

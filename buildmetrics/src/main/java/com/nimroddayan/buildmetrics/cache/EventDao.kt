@@ -43,3 +43,18 @@ class EventDaoSqlite(
         eventsQueries.purge()
     }
 }
+
+class EventDaoNoOp : EventDao {
+    override fun insert(event: BuildFinishedEvent) {
+    }
+
+    override fun selectAll(): List<BuildFinishedEvent> {
+        return emptyList()
+    }
+
+    override fun delete(timestamp: Long) {
+    }
+
+    override fun purge() {
+    }
+}
