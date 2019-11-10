@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS event (
+CREATE TABLE event (
   timestamp INTEGER NOT NULL PRIMARY KEY,
   is_success INTEGER AS Boolean DEFAULT 0 NOT NULL,
   duration_seconds INTEGER NOT NULL,
