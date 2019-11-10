@@ -29,7 +29,7 @@ version '1.0.0'
 gradlePlugin {
     plugins {
         buildMetrics {
-            id = "com.nimroddayan.buildmetrics"
+            id = "com.nimroddayan.buildmetrics.runtime"
             implementationClass = "com.nimroddayan.buildmetrics.plugin.BuildMetricsPlugin"
         }
     }
@@ -48,4 +48,9 @@ sqldelight {
         packageName = "com.nimroddayan.buildmetrics.cache"
         schemaOutputDirectory = file("src/main/sqldelight/databases")
     }
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
