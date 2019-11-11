@@ -32,13 +32,16 @@ class BuildMetricsPlugin : Plugin<Project> {
         val eventDao = createEventDao(dbHelper)
         val systemInfo = SystemInfo()
         val clientManager = ClientManager(clientDao, systemInfo, listeners)
+        val client = clientManager.getOrCreateClient()
+        val cacheManager = CacheManager(client, eventDao, listeners)
+        cacheManager.pushCachedEvents()
 
         log.info { "Registering build listener" }
         project.gradle.addBuildListener(
             BuildDurationTracker(
                 listeners,
                 eventDao,
-                clientManager.getOrCreateClient(),
+                client,
                 systemInfo
             )
         )
