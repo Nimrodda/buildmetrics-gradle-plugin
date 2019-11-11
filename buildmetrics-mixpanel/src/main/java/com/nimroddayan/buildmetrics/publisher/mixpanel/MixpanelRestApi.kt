@@ -18,10 +18,10 @@ const val ANALYTICS_URL = "https://api.mixpanel.com/"
 private val log = KotlinLogging.logger {}
 
 interface Mixpanel {
-    @GET("track")
+    @GET("track?verbose=1")
     fun trackEvent(@Query("data") data: String): Call<ResponseBody>
 
-    @GET("engage")
+    @GET("engage?verbose=1")
     fun updateProfile(@Query("data") data: String): Call<ResponseBody>
 }
 
