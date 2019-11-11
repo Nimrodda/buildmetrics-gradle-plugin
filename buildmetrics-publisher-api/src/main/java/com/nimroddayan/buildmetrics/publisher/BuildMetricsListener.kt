@@ -1,9 +1,11 @@
 package com.nimroddayan.buildmetrics.publisher
 
+import java.io.Serializable
+
 /**
  * Listener for build metric events
  */
-interface BuildMetricsListener {
+interface BuildMetricsListener : Serializable {
     /**
      * Event called when build finished
      */
