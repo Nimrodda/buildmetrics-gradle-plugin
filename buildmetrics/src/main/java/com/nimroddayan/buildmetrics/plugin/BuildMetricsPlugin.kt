@@ -8,20 +8,15 @@ import mu.KotlinLogging
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import oshi.SystemInfo
+import java.util.concurrent.CopyOnWriteArraySet
 
 private val log = KotlinLogging.logger {}
 
 @Suppress("unused")
 class BuildMetricsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        val listeners = mutableListOf<BuildMetricsListener>()
-        log.info { "Registering all build metrics listeners" }
-        project.plugins.all {
-            if (it is BuildMetricsListener) {
-                log.debug { "Registering listener: ${it::class.simpleName}" }
-                listeners += it
-            }
-        }
+        project.extensions.create("buildMetrics", BuildMetricsExtensions::class.java)
+
         val dbHelper: DatabaseHelper? = try {
             DatabaseHelper()
         } catch (e: Exception) {
@@ -31,11 +26,13 @@ class BuildMetricsPlugin : Plugin<Project> {
         val clientDao = createClientDao(dbHelper)
         val eventDao = createEventDao(dbHelper)
         val systemInfo = SystemInfo()
-        val clientManager = ClientManager(clientDao, systemInfo, listeners)
+        val clientManager = ClientManager(clientDao, systemInfo)
         val client = clientManager.getOrCreateClient()
+        val cacheManager = CacheManager(eventDao)
         project.afterEvaluate {
-            val cacheManager = CacheManager(client, eventDao, listeners)
-            cacheManager.pushCachedEvents()
+            val listeners = project.extensions.getByType(BuildMetricsExtensions::class.java).buildMetricsListeners
+            clientManager.notifyClientCreated(client, listeners)
+            cacheManager.pushCachedEvents(client, listeners)
 
             log.info { "Registering build listener" }
             project.gradle.addBuildListener(
@@ -67,5 +64,17 @@ class BuildMetricsPlugin : Plugin<Project> {
             log.debug { "Creating EventDaoNoOp" }
             EventDaoNoOp()
         }
+    }
+}
+
+abstract class BuildMetricsExtensions {
+    private val _listeners = CopyOnWriteArraySet<BuildMetricsListener>()
+    @Suppress("MemberVisibilityCanBePrivate")
+    val buildMetricsListeners: Set<BuildMetricsListener>
+        get() = _listeners
+
+    fun register(buildMetricsListener: BuildMetricsListener) {
+        log.debug { "Register build metrics listener: $buildMetricsListener" }
+        _listeners.add(buildMetricsListener)
     }
 }

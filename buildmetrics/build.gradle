@@ -10,7 +10,6 @@ repositories {
 }
 
 dependencies {
-    implementation project(":buildmetrics-publisher-api")
     implementation "com.squareup.okhttp3:okhttp:4.2.2"
     implementation "com.squareup.okhttp3:logging-interceptor:4.2.2"
     implementation "io.github.microutils:kotlin-logging:1.7.6"

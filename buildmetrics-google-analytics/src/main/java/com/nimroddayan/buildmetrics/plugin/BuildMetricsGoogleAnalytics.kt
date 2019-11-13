@@ -13,6 +13,7 @@ import org.gradle.api.provider.Property
 
 private val log = KotlinLogging.logger {}
 
+@Suppress("unused")
 class BuildMetricsGoogleAnalyticsPlugin : Plugin<Project>, BuildMetricsListener {
     override fun onClientCreated(client: Client) {
         log.info { "Google Analytics doesn't support user profiles" }
@@ -28,7 +29,9 @@ class BuildMetricsGoogleAnalyticsPlugin : Plugin<Project>, BuildMetricsListener 
     @Suppress("UnstableApiUsage")
     override fun apply(project: Project) {
         log.debug { "Initializing Google Analytics Build Metrics plugin" }
+        project.pluginManager.apply(BuildMetricsPlugin::class.java)
         val extension = project.extensions.create("googleAnalytics", BuildMetricsGoogleAnalyticsExtension::class.java, project.objects)
+        project.extensions.getByType(BuildMetricsExtensions::class.java).register(this)
         googleAnalyticsRestApi = GoogleAnalyticsRestApi(okHttpClient, extension.trackingId)
     }
 }

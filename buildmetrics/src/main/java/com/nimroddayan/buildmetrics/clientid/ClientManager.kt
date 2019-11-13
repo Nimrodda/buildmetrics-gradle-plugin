@@ -12,15 +12,11 @@ private val log = KotlinLogging.logger {}
 
 class ClientManager(
     private val clientDao: ClientDao,
-    private val systemInfo: SystemInfo,
-    private val buildMetricsListeners: List<BuildMetricsListener>
+    private val systemInfo: SystemInfo
 ) {
     fun getOrCreateClient(): Client {
         return try {
             val client = clientDao.selectFirst()
-            if (!client.synced) {
-                notifyClientCreated(client)
-            }
             client
         } catch (e: Exception) {
             log.debug(e) { "Client doesn't exist, creating..." }
@@ -37,7 +33,6 @@ class ClientManager(
                 log.debug { "Storing client in local database" }
                 clientDao.deleteAll()
                 clientDao.insert(client)
-                notifyClientCreated(client)
                 client
             } catch (e: Exception) {
                 log.debug(e) { "Failed to store client in local database, returning in-memory client" }
@@ -46,7 +41,8 @@ class ClientManager(
         }
     }
 
-    private fun notifyClientCreated(client: Client) {
+    fun notifyClientCreated(client: Client, buildMetricsListeners: Set<BuildMetricsListener>) {
+        if (client.synced) return
         try {
             log.debug { "Notifying listeners that a client has been created" }
             buildMetricsListeners.forEach { it.onClientCreated(client) }

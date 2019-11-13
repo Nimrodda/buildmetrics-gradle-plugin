@@ -12,7 +12,7 @@ class EventProcessor(
     private val isOffline: Boolean,
     private val eventDao: EventDao,
     private val client: Client,
-    private val listeners: List<BuildMetricsListener>
+    private val listeners: Set<BuildMetricsListener>
 ) {
     fun processEvent(event: BuildFinishedEvent) {
         log.debug { "Processing event: $event" }

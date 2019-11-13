@@ -14,6 +14,7 @@ import org.gradle.api.provider.Property
 
 private val log = KotlinLogging.logger {}
 
+@Suppress("unused")
 class BuildMetricsMixpanelPlugin : Plugin<Project>, BuildMetricsListener {
     private lateinit var mixpanelRestApi: MixpanelRestApi
 
@@ -29,9 +30,10 @@ class BuildMetricsMixpanelPlugin : Plugin<Project>, BuildMetricsListener {
 
     @Suppress("UnstableApiUsage")
     override fun apply(project: Project) {
-        project.checkBuildMetricsPluginApplied()
         log.debug { "Initializing Mixpanel Build Metrics plugin" }
+        project.pluginManager.apply(BuildMetricsPlugin::class.java)
         val extension = project.extensions.create("mixpanel", BuildMetricsGoogleAnalyticsExtension::class.java, project.objects)
+        project.extensions.getByType(BuildMetricsExtensions::class.java).register(this)
         mixpanelRestApi = MixpanelRestApi(retrofit, moshi, extension.token)
     }
 }

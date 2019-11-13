@@ -26,11 +26,11 @@ class EventProcessorTest {
 
     private val event = BuildFinishedEvent(true, 0L, "", "", "", 0L)
     private val client = Client("", "", "", "", "", "")
-    private lateinit var listeners: List<BuildMetricsListener>
+    private lateinit var listeners: Set<BuildMetricsListener>
 
     @Before
     fun setup() {
-        listeners = listOf(buildMetricsListener)
+        listeners = setOf(buildMetricsListener)
     }
 
     @Test
@@ -81,7 +81,7 @@ class EventProcessorTest {
     @Test
     fun `process event no listeners registered should fallback to local cache`() {
         val eventProcessor = EventProcessor(
-            listeners = emptyList(),
+            listeners = emptySet(),
             eventDao = eventDao,
             isOffline = false,
             client = client

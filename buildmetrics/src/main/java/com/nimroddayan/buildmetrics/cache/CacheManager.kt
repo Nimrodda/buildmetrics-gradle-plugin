@@ -7,11 +7,9 @@ import mu.KotlinLogging
 private val log = KotlinLogging.logger {}
 
 class CacheManager(
-    private val client: Client,
-    private val eventDao: EventDao,
-    private val listeners: List<BuildMetricsListener>
+    private val eventDao: EventDao
 ) {
-    fun pushCachedEvents() {
+    fun pushCachedEvents(client: Client, listeners: Set<BuildMetricsListener>) {
         val cachedEvents = try {
             eventDao.selectAll()
         } catch (e: Exception) {

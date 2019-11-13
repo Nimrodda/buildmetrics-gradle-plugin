@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 private val log = KotlinLogging.logger {}
 
 class BuildDurationTracker(
-    private val listeners: List<BuildMetricsListener>,
+    private val listeners: Set<BuildMetricsListener>,
     private val eventDao: EventDao,
     private val client: Client,
     private val systemInfo: SystemInfo
