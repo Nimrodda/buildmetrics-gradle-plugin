@@ -5,9 +5,7 @@ plugins {
     id "com.squareup.sqldelight" version "1.2.0"
 }
 
-repositories {
-    jcenter()
-}
+apply from: '../common.gradle'
 
 dependencies {
     implementation "com.squareup.okhttp3:okhttp:4.2.2"
@@ -22,9 +20,6 @@ dependencies {
     testImplementation 'com.google.truth:truth:1.0'
 }
 
-group 'com.nimroddayan.buildmetrics'
-version '1.0.0'
-
 gradlePlugin {
     plugins {
         buildMetrics {
@@ -34,22 +29,9 @@ gradlePlugin {
     }
 }
 
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
 sqldelight {
     BuildMetricsDb {
         packageName = "com.nimroddayan.buildmetrics.cache"
         schemaOutputDirectory = file("src/main/sqldelight/databases")
     }
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
 }

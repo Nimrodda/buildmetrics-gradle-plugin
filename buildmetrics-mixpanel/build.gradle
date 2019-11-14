@@ -4,23 +4,7 @@ plugins {
     id "maven-publish"
 }
 
-group 'com.nimroddayan.buildmetrics'
-version '1.0.0'
-
-repositories {
-    jcenter()
-}
-
-dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-}
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
+apply from: '../common.gradle'
 
 dependencies {
     implementation project(":buildmetrics")
@@ -44,9 +28,4 @@ gradlePlugin {
             implementationClass = "com.nimroddayan.buildmetrics.plugin.BuildMetricsMixpanelPlugin"
         }
     }
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
 }
