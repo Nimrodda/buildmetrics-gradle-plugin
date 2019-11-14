@@ -18,3 +18,4 @@ pluginManagement {
 include ':buildmetrics'
 include ':buildmetrics-google-analytics'
 include ':buildmetrics-mixpanel'
+include ':buildmetrics-amplitude'
