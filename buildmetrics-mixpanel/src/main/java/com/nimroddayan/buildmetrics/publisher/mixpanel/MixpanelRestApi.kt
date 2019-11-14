@@ -48,7 +48,7 @@ class MixpanelRestApi(
         val requestJson = moshi.adapter(UpdateProfileRequest::class.java).toJson(request)
         val requestBase64 = Base64.getEncoder().encodeToString(requestJson.toByteArray(UTF_8))
         log.debug { "Sending user profile update to Mixpanel" }
-        mixpanel.updateProfile(requestBase64)
+        mixpanel.updateProfile(requestBase64).execute()
     }
 }
 
