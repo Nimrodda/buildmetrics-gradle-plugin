@@ -32,13 +32,13 @@ class BuildMetricsMixpanelPlugin : Plugin<Project>, BuildMetricsListener {
     override fun apply(project: Project) {
         log.debug { "Initializing Mixpanel Build Metrics plugin" }
         project.pluginManager.apply(BuildMetricsPlugin::class.java)
-        val extension = project.extensions.create("mixpanel", BuildMetricsGoogleAnalyticsExtension::class.java, project.objects)
+        val extension = project.extensions.create("mixpanel", BuildMetricsMixpanelAnalyticsExtension::class.java, project.objects)
         project.extensions.getByType(BuildMetricsExtensions::class.java).register(this)
         mixpanelRestApi = MixpanelRestApi(retrofit, moshi, extension.token)
     }
 }
 
 @Suppress("unused", "UnstableApiUsage")
-abstract class BuildMetricsGoogleAnalyticsExtension(objectFactory: ObjectFactory) {
+abstract class BuildMetricsMixpanelAnalyticsExtension(objectFactory: ObjectFactory) {
     val token: Property<String> = objectFactory.property(String::class.java)
 }
