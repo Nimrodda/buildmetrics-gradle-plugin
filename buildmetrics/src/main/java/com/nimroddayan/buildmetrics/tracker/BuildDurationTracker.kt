@@ -38,7 +38,8 @@ class BuildDurationTracker(
     private val listeners: Set<BuildMetricsListener>,
     private val eventDao: EventDao,
     private val client: Client,
-    private val systemInfo: SystemInfo
+    private val systemInfo: SystemInfo,
+    private val taskFilter: Set<String>
 ) : BuildListener {
     private var buildStart: Long = 0L
     private var isTracking = true
@@ -63,10 +64,12 @@ class BuildDurationTracker(
 
     override fun projectsEvaluated(gradle: Gradle) {
         val taskNames = gradle.startParameter.taskNames
-        isTracking = taskNames.any { it.contains("assemble") }
+        log.debug { "Build start parameter tasks: $taskNames" }
+        val task = taskNames.first().split(":").last()
+        isTracking = taskFilter.isEmpty() || taskFilter.any { task.startsWith(it) }
         if (!isTracking) return
 
-        log.info { "Assemble task detected. Tracking build duration..." }
+        log.info { "Tracking build duration..." }
         this.taskNames += taskNames
         eventProcessor = EventProcessor(
             gradle.startParameter.isOffline,

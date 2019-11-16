@@ -24,6 +24,8 @@ import com.nimroddayan.buildmetrics.tracker.BuildDurationTracker
 import mu.KotlinLogging
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.SetProperty
 import oshi.SystemInfo
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -32,7 +34,7 @@ private val log = KotlinLogging.logger {}
 @Suppress("unused")
 class BuildMetricsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        project.extensions.create("buildMetrics", BuildMetricsExtensions::class.java)
+        project.extensions.create("buildMetrics", BuildMetricsExtensions::class.java, project.objects)
 
         val dbHelper: DatabaseHelper? = try {
             DatabaseHelper()
@@ -47,7 +49,10 @@ class BuildMetricsPlugin : Plugin<Project> {
         val client = clientManager.getOrCreateClient()
         val cacheManager = CacheManager(eventDao)
         project.afterEvaluate {
-            val listeners = project.extensions.getByType(BuildMetricsExtensions::class.java).buildMetricsListeners
+            val extension = project.extensions.getByType(BuildMetricsExtensions::class.java)
+            val taskFilter = extension.taskFilter.orNull ?: emptySet()
+            val listeners = extension.buildMetricsListeners
+            log.debug { "Task filter: $taskFilter" }
             clientManager.notifyClientCreated(client, listeners)
             cacheManager.pushCachedEvents(client, listeners)
 
@@ -57,7 +62,8 @@ class BuildMetricsPlugin : Plugin<Project> {
                     listeners,
                     eventDao,
                     client,
-                    systemInfo
+                    systemInfo,
+                    taskFilter
                 )
             )
         }
@@ -84,12 +90,23 @@ class BuildMetricsPlugin : Plugin<Project> {
     }
 }
 
-abstract class BuildMetricsExtensions {
+abstract class BuildMetricsExtensions(objectFactory: ObjectFactory) {
     private val _listeners = CopyOnWriteArraySet<BuildMetricsListener>()
     @Suppress("MemberVisibilityCanBePrivate")
     val buildMetricsListeners: Set<BuildMetricsListener>
         get() = _listeners
 
+    /**
+     * A set of tasks which should be tracked. If left empty, all tasks will be tracked.
+     *
+     * The tasks contained in this set must be the tasks that starts the build.
+     */
+    @Suppress("unused")
+    val taskFilter: SetProperty<String> = objectFactory.setProperty(String::class.java)
+
+    /**
+     * Register a [BuildMetricsListener] which will be called when the build is finished
+     */
     fun register(buildMetricsListener: BuildMetricsListener) {
         log.debug { "Register build metrics listener: $buildMetricsListener" }
         _listeners.add(buildMetricsListener)
