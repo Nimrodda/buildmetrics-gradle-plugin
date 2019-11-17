@@ -2,6 +2,7 @@ plugins {
     id "org.jetbrains.kotlin.jvm"
     id "java-gradle-plugin"
     id "maven-publish"
+    id "com.gradle.plugin-publish"
     id "com.squareup.sqldelight" version "1.2.0"
 }
 
@@ -25,8 +26,16 @@ gradlePlugin {
         buildMetrics {
             id = "com.nimroddayan.buildmetrics.runtime"
             implementationClass = "com.nimroddayan.buildmetrics.plugin.BuildMetricsPlugin"
+            displayName = "Build metrics runtime"
+            description = "Track build duration per hardware specs and tasks"
         }
     }
+}
+
+pluginBundle {
+    website = 'https://github.com/Nimrodda/build-metrics-gradle-plugin'
+    vcsUrl = 'https://github.com/Nimrodda/build-metrics-gradle-plugin'
+    tags = ['analytics', 'amplitude', 'mixpanel', 'build', 'metrics', 'google', 'track']
 }
 
 sqldelight {

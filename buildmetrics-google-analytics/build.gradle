@@ -2,6 +2,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm'
     id "java-gradle-plugin"
     id "maven-publish"
+    id "com.gradle.plugin-publish"
 }
 
 apply from: '../common.gradle'
@@ -23,6 +24,14 @@ gradlePlugin {
         buildMetricsGoogleAnalytics {
             id = "com.nimroddayan.buildmetrics.googleanalytics"
             implementationClass = "com.nimroddayan.buildmetrics.plugin.BuildMetricsGoogleAnalyticsPlugin"
+            displayName = "Build Metrics Google Analytics extension"
+            description = "This is a Google Analytics extension plugin to Build Metrics runtime plugin"
         }
     }
+}
+
+pluginBundle {
+    website = 'https://github.com/Nimrodda/build-metrics-gradle-plugin'
+    vcsUrl = 'https://github.com/Nimrodda/build-metrics-gradle-plugin'
+    tags = ['analytics', 'build', 'metrics', 'google']
 }

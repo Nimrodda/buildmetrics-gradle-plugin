@@ -2,6 +2,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm'
     id "java-gradle-plugin"
     id "maven-publish"
+    id "com.gradle.plugin-publish"
 }
 
 apply from: '../common.gradle'
@@ -26,6 +27,14 @@ gradlePlugin {
         buildMetricsMixpanel {
             id = "com.nimroddayan.buildmetrics.mixpanel"
             implementationClass = "com.nimroddayan.buildmetrics.plugin.BuildMetricsMixpanelPlugin"
+            displayName = "Build Metrics Mixpanel extension"
+            description = "This is a Mixpanel extension plugin to Build Metrics runtime plugin"
         }
     }
+}
+
+pluginBundle {
+    website = 'https://github.com/Nimrodda/build-metrics-gradle-plugin'
+    vcsUrl = 'https://github.com/Nimrodda/build-metrics-gradle-plugin'
+    tags = ['analytics', 'mixpanel', 'build', 'metrics']
 }
