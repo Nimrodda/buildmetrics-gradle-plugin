@@ -8,7 +8,7 @@ The plugin consists of several ready made extensions that can be combined togeth
 The base plugin stores all events to a local database. If any of the extension is used then the base plugin 
 will attempt to first track events with the using the service provided by the extension 
 and only if it fails to do so it will log them to the local database. 
-In this case each new build will attempt to upload 
+In this case, the next build will attempt to upload 
 the cached events so far and clear the cache once all events are uploaded.
 
 ## Supported Analytics services

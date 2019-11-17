@@ -17,6 +17,7 @@
 
 package com.nimroddayan.buildmetrics.tracker
 
+import com.nimroddayan.buildmetrics.cache.CacheManager
 import com.nimroddayan.buildmetrics.cache.EventDao
 import com.nimroddayan.buildmetrics.publisher.BuildFinishedEvent
 import com.nimroddayan.buildmetrics.publisher.BuildMetricsListener
@@ -39,7 +40,8 @@ class BuildDurationTracker(
     private val eventDao: EventDao,
     private val client: Client,
     private val systemInfo: SystemInfo,
-    private val taskFilter: Set<String>
+    private val taskFilter: Set<String>,
+    private val cacheManager: CacheManager
 ) : BuildListener {
     private var buildStart: Long = 0L
     private var isTracking = true
@@ -50,6 +52,7 @@ class BuildDurationTracker(
     }
 
     override fun buildFinished(buildResult: BuildResult) {
+        cacheManager.pushCachedEvents(client, listeners)
         if (!isTracking) return
 
         val duration = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - buildStart)

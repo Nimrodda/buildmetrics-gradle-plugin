@@ -48,13 +48,13 @@ class BuildMetricsPlugin : Plugin<Project> {
         val clientManager = ClientManager(clientDao, systemInfo)
         val client = clientManager.getOrCreateClient()
         val cacheManager = CacheManager(eventDao)
+
         project.afterEvaluate {
             val extension = project.extensions.getByType(BuildMetricsExtensions::class.java)
             val taskFilter = extension.taskFilter.orNull ?: emptySet()
             val listeners = extension.buildMetricsListeners
             log.debug { "Task filter: $taskFilter" }
             clientManager.notifyClientCreated(client, listeners)
-            cacheManager.pushCachedEvents(client, listeners)
 
             log.info { "Registering build listener" }
             project.gradle.addBuildListener(
@@ -63,7 +63,8 @@ class BuildMetricsPlugin : Plugin<Project> {
                     eventDao,
                     client,
                     systemInfo,
-                    taskFilter
+                    taskFilter,
+                    cacheManager
                 )
             )
         }
