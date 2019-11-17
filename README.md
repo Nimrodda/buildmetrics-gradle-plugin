@@ -1,6 +1,6 @@
 # Build Metrics Gradle plugin
 
-Build metrics Gradle plugin is a set of plugins that track 'assemble' tasks execution's duration and other useful 
+Build metrics Gradle plugin is a set of plugins that track any task execution's duration and other useful 
 metrics, such as hardware specs, etc. The plugin allows ease of extension via simple API. You can develop your own
 extension that will track build events to whatever service you wish. 
 
@@ -25,11 +25,17 @@ TODO
 
 ### Base plugin
 
-You don't need to apply the base plugin if you apply one or more of the analytics services extension plugins.
+You don't need to apply the base plugin if you apply one (or more) of the analytics services extension plugins.
  
 ```Gradle
 plugins {
     id "com.nimroddayan.buildmetrics" version "1.0.0"
+}
+
+buildMetrics {
+    // Track only assemble and test tasks
+    // Note that if you chain multiple tasks, tracking is decided based on the first task.
+    taskFilter = ["assemble", "test"]
 }
 
 ``` 
