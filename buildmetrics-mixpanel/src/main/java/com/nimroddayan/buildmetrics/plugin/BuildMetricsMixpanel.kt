@@ -22,8 +22,10 @@ import com.nimroddayan.buildmetrics.plugin.Injection.retrofit
 import com.nimroddayan.buildmetrics.publisher.BuildFinishedEvent
 import com.nimroddayan.buildmetrics.publisher.BuildMetricsListener
 import com.nimroddayan.buildmetrics.publisher.Client
+import com.nimroddayan.buildmetrics.publisher.mixpanel.ANALYTICS_URL
 import com.nimroddayan.buildmetrics.publisher.mixpanel.MixpanelRestApi
 import mu.KotlinLogging
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
@@ -51,7 +53,7 @@ class BuildMetricsMixpanelPlugin : Plugin<Project>, BuildMetricsListener {
         project.pluginManager.apply(BuildMetricsPlugin::class.java)
         val extension = project.extensions.create("mixpanel", BuildMetricsMixpanelAnalyticsExtension::class.java, project.objects)
         project.extensions.getByType(BuildMetricsExtensions::class.java).register(this)
-        mixpanelRestApi = MixpanelRestApi(retrofit, moshi, extension.token)
+        mixpanelRestApi = MixpanelRestApi(retrofit(ANALYTICS_URL.toHttpUrlOrNull()!!), moshi, extension.token)
     }
 }
 
