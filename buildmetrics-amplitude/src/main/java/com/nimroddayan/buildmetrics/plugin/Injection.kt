@@ -17,10 +17,10 @@
 
 package com.nimroddayan.buildmetrics.plugin
 
-import com.nimroddayan.buildmetrics.publisher.mixpanel.ANALYTICS_URL
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import mu.KotlinLogging
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -35,8 +35,8 @@ object Injection {
 
     val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
-    val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl(ANALYTICS_URL)
+    fun retrofit(baseUrl: HttpUrl): Retrofit = Retrofit.Builder()
+        .baseUrl(baseUrl)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .client(okHttpClient)
         .build()

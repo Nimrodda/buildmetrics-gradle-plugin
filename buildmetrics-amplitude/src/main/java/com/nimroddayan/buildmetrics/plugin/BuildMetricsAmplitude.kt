@@ -21,8 +21,10 @@ import com.nimroddayan.buildmetrics.plugin.Injection.retrofit
 import com.nimroddayan.buildmetrics.publisher.BuildFinishedEvent
 import com.nimroddayan.buildmetrics.publisher.BuildMetricsListener
 import com.nimroddayan.buildmetrics.publisher.Client
-import com.nimroddayan.buildmetrics.publisher.mixpanel.AmplitudeRestApi
+import com.nimroddayan.buildmetrics.publisher.amplitude.ANALYTICS_URL
+import com.nimroddayan.buildmetrics.publisher.amplitude.AmplitudeRestApi
 import mu.KotlinLogging
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
@@ -48,7 +50,7 @@ class BuildMetricsAmplitudePlugin : Plugin<Project>, BuildMetricsListener {
         project.pluginManager.apply(BuildMetricsPlugin::class.java)
         val extension = project.extensions.create("amplitude", BuildMetricsAmplitudeAnalyticsExtension::class.java, project.objects)
         project.extensions.getByType(BuildMetricsExtensions::class.java).register(this)
-        amplitudeRestApi = AmplitudeRestApi(retrofit, extension.apiKey)
+        amplitudeRestApi = AmplitudeRestApi(retrofit(ANALYTICS_URL.toHttpUrlOrNull()!!), extension.apiKey)
     }
 }
 

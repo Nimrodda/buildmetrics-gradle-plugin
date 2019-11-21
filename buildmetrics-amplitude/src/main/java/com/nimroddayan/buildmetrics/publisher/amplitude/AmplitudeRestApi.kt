@@ -15,7 +15,7 @@
  *
  */
 
-package com.nimroddayan.buildmetrics.publisher.mixpanel
+package com.nimroddayan.buildmetrics.publisher.amplitude
 
 import com.nimroddayan.buildmetrics.publisher.BuildFinishedEvent
 import com.nimroddayan.buildmetrics.publisher.Client
