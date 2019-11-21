@@ -59,7 +59,7 @@ class ClientManager(
     }
 
     fun notifyClientCreated(client: Client, buildMetricsListeners: Set<BuildMetricsListener>) {
-        if (client.synced) return
+        if (client.synced || buildMetricsListeners.isEmpty()) return
         try {
             log.debug { "Notifying listeners that a client has been created" }
             buildMetricsListeners.forEach { it.onClientCreated(client) }

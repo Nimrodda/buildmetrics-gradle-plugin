@@ -27,6 +27,7 @@ class CacheManager(
     private val eventDao: EventDao
 ) {
     fun pushCachedEvents(client: Client, listeners: Set<BuildMetricsListener>) {
+        if (listeners.isEmpty()) return
         val cachedEvents = try {
             eventDao.selectAll()
         } catch (e: Exception) {

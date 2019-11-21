@@ -44,7 +44,7 @@ class BuildDurationTracker(
     private val cacheManager: CacheManager
 ) : BuildListener {
     private var buildStart: Long = 0L
-    private var isTracking = true
+    private var isTracking = false
     private val taskNames = mutableListOf<String>()
     private lateinit var eventProcessor: EventProcessor
 
@@ -52,8 +52,8 @@ class BuildDurationTracker(
     }
 
     override fun buildFinished(buildResult: BuildResult) {
-        cacheManager.pushCachedEvents(client, listeners)
         if (!isTracking) return
+        cacheManager.pushCachedEvents(client, listeners)
 
         val duration = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - buildStart)
         trackBuildFinished(buildResult.failure == null, duration, taskNames)
@@ -68,6 +68,7 @@ class BuildDurationTracker(
     override fun projectsEvaluated(gradle: Gradle) {
         val taskNames = gradle.startParameter.taskNames
         log.debug { "Build start parameter tasks: $taskNames" }
+        if (taskNames.isEmpty()) return
         val task = taskNames.first().split(":").last()
         isTracking = taskFilter.isEmpty() || taskFilter.any { task.startsWith(it) }
         if (!isTracking) return
