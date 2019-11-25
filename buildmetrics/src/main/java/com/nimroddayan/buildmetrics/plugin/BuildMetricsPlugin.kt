@@ -27,6 +27,7 @@ import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.SetProperty
 import oshi.SystemInfo
+import java.nio.file.Paths
 import java.util.concurrent.CopyOnWriteArraySet
 
 private val log = KotlinLogging.logger {}
@@ -35,9 +36,9 @@ private val log = KotlinLogging.logger {}
 class BuildMetricsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.extensions.create("buildMetrics", BuildMetricsExtensions::class.java, project.objects)
-
+        val dbPath = Paths.get(project.projectDir.absolutePath, ".buildmetrics").toString()
         val dbHelper: DatabaseHelper? = try {
-            DatabaseHelper()
+            DatabaseHelper(dbPath)
         } catch (e: Exception) {
             log.warn(e) { "Failed to connect to build metrics database" }
             null
