@@ -17,6 +17,16 @@
 
 package com.nimroddayan.buildmetrics.publisher
 
+/**
+ * Data class representing a single build finished event.
+ *
+ * @param isSuccess true if the build was successful
+ * @param durationSeconds The duration of the build in seconds
+ * @param freeRam The amount of free ram when the build was finished
+ * @param swapRam The amount of swap ram when the build was finished
+ * @param taskNames The tasks that started the build. Including project. Example: ':app:assembleDebug'.
+ * @param timestamp Epoch ms when the build was finished
+ */
 data class BuildFinishedEvent(
     val isSuccess: Boolean,
     val durationSeconds: Long,

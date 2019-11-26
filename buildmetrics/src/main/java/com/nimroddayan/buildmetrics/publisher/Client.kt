@@ -17,6 +17,16 @@
 
 package com.nimroddayan.buildmetrics.publisher
 
+/**
+ * Data class representing info regarding the client that ran the build
+ *
+ * @param id Unique identifier. Created locally.
+ * @param osName The name of the Operating System running the build
+ * @param osVersion The version of the Operating System running the build
+ * @param cpu The client's processor info. This is the commercial name of the processor. For example: "Intel Core i7 8700K ..."
+ * @param ram The client's total RAM capacity. This is a number with RAM unit, such as "16 GB", "32 GB", etc.
+ * @param model The commercial name of the client machine model. For example "Macbook Pro ...".
+ */
 data class Client(
     val id: String,
     val osName: String,
@@ -24,5 +34,5 @@ data class Client(
     val cpu: String,
     val ram: String,
     val model: String,
-    val synced: Boolean = false
+    internal val synced: Boolean = false
 )
