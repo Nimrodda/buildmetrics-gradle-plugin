@@ -25,7 +25,7 @@ import mu.KotlinLogging
 
 private val log = KotlinLogging.logger {}
 
-class EventProcessor(
+internal class EventProcessor(
     private val isOffline: Boolean,
     private val eventDao: EventDao,
     private val client: Client,

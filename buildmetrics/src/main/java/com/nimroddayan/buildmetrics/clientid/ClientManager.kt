@@ -27,7 +27,7 @@ import java.util.UUID
 
 private val log = KotlinLogging.logger {}
 
-class ClientManager(
+internal class ClientManager(
     private val clientDao: ClientDao,
     private val systemInfo: SystemInfo
 ) {

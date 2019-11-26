@@ -20,14 +20,14 @@ package com.nimroddayan.buildmetrics.cache
 import com.nimroddayan.buildmetrics.EventQueries
 import com.nimroddayan.buildmetrics.publisher.BuildFinishedEvent
 
-interface EventDao {
+internal interface EventDao {
     fun insert(event: BuildFinishedEvent)
     fun selectAll(): List<BuildFinishedEvent>
     fun delete(timestamp: Long)
     fun purge()
 }
 
-class EventDaoSqlite(
+internal class EventDaoSqlite(
     private val eventsQueries: EventQueries
 ) : EventDao {
     override fun insert(event: BuildFinishedEvent) {
@@ -63,7 +63,7 @@ class EventDaoSqlite(
     }
 }
 
-class EventDaoNoOp : EventDao {
+internal class EventDaoNoOp : EventDao {
     override fun insert(event: BuildFinishedEvent) {
     }
 

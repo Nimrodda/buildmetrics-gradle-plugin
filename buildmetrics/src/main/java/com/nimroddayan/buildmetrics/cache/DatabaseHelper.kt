@@ -22,7 +22,7 @@ import mu.KotlinLogging
 
 private val log = KotlinLogging.logger {}
 
-class DatabaseHelper(
+internal class DatabaseHelper(
     dbFile: String? = ".buildmetrics"
 ) {
     val database: BuildMetricsDb

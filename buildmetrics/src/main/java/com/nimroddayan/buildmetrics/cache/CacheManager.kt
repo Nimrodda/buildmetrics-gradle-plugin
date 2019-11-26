@@ -23,7 +23,7 @@ import mu.KotlinLogging
 
 private val log = KotlinLogging.logger {}
 
-class CacheManager(
+internal class CacheManager(
     private val eventDao: EventDao
 ) {
     fun pushCachedEvents(client: Client, listeners: Set<BuildMetricsListener>) {

@@ -20,14 +20,14 @@ package com.nimroddayan.buildmetrics.cache
 import com.nimroddayan.buildmetrics.ClientQueries
 import com.nimroddayan.buildmetrics.publisher.Client
 
-interface ClientDao {
+internal interface ClientDao {
     fun insert(client: Client)
     fun selectFirst(): Client
     fun deleteAll()
     fun markSynced()
 }
 
-class ClientDaoSqlite(
+internal class ClientDaoSqlite(
     private val clientQueries: ClientQueries
 ) : ClientDao {
     override fun insert(client: Client) {
@@ -64,7 +64,7 @@ class ClientDaoSqlite(
     }
 }
 
-class ClientDaoNoOp : ClientDao {
+internal class ClientDaoNoOp : ClientDao {
     lateinit var client: Client
 
     override fun insert(client: Client) {

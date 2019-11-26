@@ -19,12 +19,12 @@ package com.nimroddayan.buildmetrics.publisher.mixpanel
 
 import com.squareup.moshi.Json
 
-data class BuildFinishedEventRequest(
+internal data class BuildFinishedEventRequest(
     @Json(name = "event") val event: String,
     @Json(name = "properties") val properties: BuildFinishedEventProperties
 )
 
-class BuildFinishedEventProperties(
+internal class BuildFinishedEventProperties(
     @Json(name = "build_success") val isBuildSuccess: Boolean,
     @Json(name = "build_duration") val buildDuration: Long,
     @Json(name = "build_free_ram") val buildFreeRam: String,

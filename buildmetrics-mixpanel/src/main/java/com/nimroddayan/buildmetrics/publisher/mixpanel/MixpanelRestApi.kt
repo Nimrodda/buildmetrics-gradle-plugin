@@ -34,7 +34,7 @@ const val ANALYTICS_URL = "https://api.mixpanel.com/"
 
 private val log = KotlinLogging.logger {}
 
-interface Mixpanel {
+internal interface Mixpanel {
     @GET("track?verbose=1")
     fun trackEvent(@Query("data") data: String): Call<ResponseBody>
 
@@ -45,7 +45,7 @@ interface Mixpanel {
 /**
  * Mixpanel REST API for sending build finished events and profile updates
  */
-class MixpanelRestApi(
+internal class MixpanelRestApi(
     retrofit: Retrofit,
     private val moshi: Moshi,
     @Suppress("UnstableApiUsage") private val token: Property<String>
@@ -69,7 +69,7 @@ class MixpanelRestApi(
     }
 }
 
-fun BuildFinishedEvent.toBuildFinishedEventRequest(distinctId: String, token: String): BuildFinishedEventRequest {
+internal fun BuildFinishedEvent.toBuildFinishedEventRequest(distinctId: String, token: String): BuildFinishedEventRequest {
     return BuildFinishedEventRequest(
         event = "BuildFinished",
         properties = BuildFinishedEventProperties(
@@ -84,7 +84,7 @@ fun BuildFinishedEvent.toBuildFinishedEventRequest(distinctId: String, token: St
     )
 }
 
-fun Client.toUpdateProfileRequest(token: String): UpdateProfileRequest {
+internal fun Client.toUpdateProfileRequest(token: String): UpdateProfileRequest {
     return UpdateProfileRequest(
         token = token,
         distinctId = id,

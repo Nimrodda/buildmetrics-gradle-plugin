@@ -31,7 +31,7 @@ const val ANALYTICS_URL = "https://api.amplitude.com/"
 
 private val log = KotlinLogging.logger {}
 
-interface Amplitude {
+internal interface Amplitude {
     @POST("2/httpapi")
     fun trackEvent(@Body request: BuildFinishedEventRequest): Call<ResponseBody>
 }
@@ -39,7 +39,7 @@ interface Amplitude {
 /**
  * Amplitude REST API for sending build finished events and user properties
  */
-class AmplitudeRestApi(
+internal class AmplitudeRestApi(
     retrofit: Retrofit,
     @Suppress("UnstableApiUsage") private val apiKey: Property<String>
 ) {
@@ -52,7 +52,7 @@ class AmplitudeRestApi(
     }
 }
 
-fun BuildFinishedEvent.toBuildFinishedEventRequest(client: Client, apiKey: String): BuildFinishedEventRequest {
+internal fun BuildFinishedEvent.toBuildFinishedEventRequest(client: Client, apiKey: String): BuildFinishedEventRequest {
     return BuildFinishedEventRequest(
         apiKey = apiKey,
         events = listOf(

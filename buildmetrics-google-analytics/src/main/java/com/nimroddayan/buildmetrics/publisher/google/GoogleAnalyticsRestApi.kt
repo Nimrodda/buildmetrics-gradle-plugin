@@ -43,7 +43,7 @@ private val log = KotlinLogging.logger {}
  *
  * https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
  */
-class GoogleAnalyticsRestApi(
+internal class GoogleAnalyticsRestApi(
     private val httpClient: OkHttpClient,
     @Suppress("UnstableApiUsage") private val trackingId: Property<String>,
     private val url: HttpUrl = ANALYTICS_URL

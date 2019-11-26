@@ -24,8 +24,8 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.nimroddayan.buildmetrics.cache.EventDao
 import com.nimroddayan.buildmetrics.publisher.BuildFinishedEvent
 import com.nimroddayan.buildmetrics.publisher.BuildMetricsListener
-import com.nimroddayan.buildmetrics.tracker.EventProcessor
 import com.nimroddayan.buildmetrics.publisher.Client
+import com.nimroddayan.buildmetrics.tracker.EventProcessor
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
