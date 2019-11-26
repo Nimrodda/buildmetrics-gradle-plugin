@@ -9,16 +9,16 @@ plugins {
 apply from: '../common.gradle'
 
 dependencies {
-    implementation "com.squareup.okhttp3:okhttp:4.2.2"
-    implementation "com.squareup.okhttp3:logging-interceptor:4.2.2"
-    implementation "io.github.microutils:kotlin-logging:1.7.6"
-    implementation "com.squareup.sqldelight:sqlite-driver:1.2.0"
-    implementation("com.github.oshi:oshi-core:4.1.1")
-    implementation "commons-io:commons-io:2.6"
-    testImplementation "junit:junit:4.12"
-    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.2.1")
-    testImplementation 'com.google.truth:truth:1.0'
+    implementation Deps.okhttp
+    implementation Deps.okhttpLogging
+    implementation Deps.kotlinLogging
+    implementation Deps.sqldelight
+    implementation Deps.oshi
+    implementation Deps.commonsIo
+    testImplementation Deps.junit
+    testImplementation Deps.mockito
+    testImplementation Deps.mockServer
+    testImplementation Deps.truth
 }
 
 gradlePlugin {
