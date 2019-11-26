@@ -3,12 +3,12 @@ plugins {
     id "java-gradle-plugin"
     id "maven-publish"
     id "com.gradle.plugin-publish"
-    id "com.squareup.sqldelight" version "1.2.0"
 }
 
 apply from: '../common.gradle'
 
 dependencies {
+    implementation project(":buildmetrics-db")
     implementation Deps.okhttp
     implementation Deps.okhttpLogging
     implementation Deps.kotlinLogging
@@ -36,11 +36,4 @@ pluginBundle {
     website = 'https://github.com/Nimrodda/build-metrics-gradle-plugin'
     vcsUrl = 'https://github.com/Nimrodda/build-metrics-gradle-plugin'
     tags = ['analytics', 'amplitude', 'mixpanel', 'build', 'metrics', 'google', 'track']
-}
-
-sqldelight {
-    BuildMetricsDb {
-        packageName = "com.nimroddayan.buildmetrics.cache"
-        schemaOutputDirectory = file("src/main/sqldelight/databases")
-    }
 }

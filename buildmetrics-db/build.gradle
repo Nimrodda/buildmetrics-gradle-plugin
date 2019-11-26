@@ -1,0 +1,25 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id "maven-publish"
+    id "com.squareup.sqldelight" version "1.2.0"
+}
+
+apply from: '../common.gradle'
+
+dependencies {
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+sqldelight {
+    BuildMetricsDb {
+        packageName = "com.nimroddayan.buildmetrics.cache"
+        schemaOutputDirectory = file("src/main/sqldelight/databases")
+    }
+}
