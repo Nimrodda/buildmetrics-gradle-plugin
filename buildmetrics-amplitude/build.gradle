@@ -18,7 +18,7 @@ gradlePlugin {
             id = "com.nimroddayan.buildmetrics.amplitude"
             implementationClass = "com.nimroddayan.buildmetrics.plugin.BuildMetricsAmplitudePlugin"
             displayName = "Build metrics Amplitude extension"
-            description = "This is an Amplitude extension plugin to Build Metrics runtime plugin"
+            description = "An Amplitude extension plugin for Build Metrics runtime plugin"
         }
     }
 }

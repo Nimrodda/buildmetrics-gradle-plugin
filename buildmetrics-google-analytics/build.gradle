@@ -18,7 +18,7 @@ gradlePlugin {
             id = "com.nimroddayan.buildmetrics.googleanalytics"
             implementationClass = "com.nimroddayan.buildmetrics.plugin.BuildMetricsGoogleAnalyticsPlugin"
             displayName = "Build Metrics Google Analytics extension"
-            description = "This is a Google Analytics extension plugin to Build Metrics runtime plugin"
+            description = "A Google Analytics extension plugin for Build Metrics runtime plugin"
         }
     }
 }

@@ -98,6 +98,15 @@ class BuildMetricsPlugin : Plugin<Project> {
     }
 }
 
+/**
+ * Buildmetrics runtime plugin extensions.
+ *
+ * Using this extensions you can register your own [BuildMetricsListener]
+ * to publish analytics to a custom service or filter the tasks you would like
+ * to track.
+ *
+ * @see [BuildMetricsListener]
+ */
 abstract class BuildMetricsExtensions(objectFactory: ObjectFactory) {
     private val _listeners = CopyOnWriteArraySet<BuildMetricsListener>()
     @Suppress("MemberVisibilityCanBePrivate")

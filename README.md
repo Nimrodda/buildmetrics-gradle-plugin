@@ -19,22 +19,52 @@ the cached events so far and clear the cache once all events are uploaded.
 
 ## What data is tracked?
 
-TODO
+Check out `Client` and `BuildFinishedEvent` data classes to see what data is tracked.
+
+## How does it work?
+
+The plugin hooks up to Gradle build lifecycle to figure out when the build started and when it has finished.
+During the first run, a client info is created and stored in a local SQLite database named `.buildmetrics`, which is stored
+in the root project folder. The reason it is stored there instead of build folder is because build folder is often cleaned and since
+we want to keep the client info throughout the builds. Another reason is because events can also be stored in the local database.
+You must not delete this file and also do not commit it to version control (Add it to your `.gitignore`).
+The database file is unique per machine.
+
+When build is finished, the plugin will upload the event and client info to the analytics service based on the 
+plugin you applied or if you just applied the runtime plugin, it will store the event in the local database. 
+Events are stored in the local database also when the request to the analytics service has failed. 
+The plugin will then attempt to upload the cached events during the next time a build is finished.
 
 ## Download
 
-### Base plugin
+Add the following to the top of your `settings.gradle` file:
 
-You don't need to apply the base plugin if you apply one (or more) of the analytics services extension plugins.
+```groovy
+pluginManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+        google()
+        gradlePluginPortal()
+    }
+}
+```
+
+### Runtime plugin
+
+>Note that you don't need to apply the runtime plugin if you apply one of the analytics services extension plugins since
+those already apply the runtime plugin. Which means that `buildMetrics` extension block is available with all the plugins.
  
 ```Gradle
 plugins {
-    id "com.nimroddayan.buildmetrics" version "1.0.0"
+    id "com.nimroddayan.buildmetrics" version "0.1.0"
 }
 
 buildMetrics {
     // Track only assemble and test tasks
-    // Note that if you chain multiple tasks, tracking is decided based on the first task.
+    // Note that if you chain multiple tasks, e.g. when running `./gradlew assemble publish` 
+    // tracking is decided based on the first task, which in this case is `assemble`. 
     taskFilter = ["assemble", "test"]
 }
 
@@ -44,7 +74,7 @@ buildMetrics {
  
 ```Gradle
 plugins {
-    id "com.nimroddayan.buildmetrics.amplitude" version "1.0.0"
+    id "com.nimroddayan.buildmetrics.amplitude" version "0.1.0"
 }
 
 amplitude {
@@ -57,7 +87,7 @@ amplitude {
  
 ```Gradle
 plugins {
-    id "com.nimroddayan.buildmetrics.mixpanel" version "1.0.0"
+    id "com.nimroddayan.buildmetrics.mixpanel" version "0.1.0"
 }
 
 mixpanel {
@@ -70,7 +100,7 @@ mixpanel {
  
 ```Gradle
 plugins {
-    id "com.nimroddayan.buildmetrics.googleanalytics" version "1.0.0"
+    id "com.nimroddayan.buildmetrics.googleanalytics" version "0.1.0"
 }
 
 googleAnalytics {
@@ -78,10 +108,38 @@ googleAnalytics {
 }
 ``` 
 
-### Developing your own extension plugin
+## Developing your own extension plugin
 
-TODO
+Developing your own extension is super easy. I highly recommend that you use one of the analytics services plugins 
+in this repository as a reference, for example, `buildmetrics-amplitude`.
 
+Implement your plugin as you would any Gradle plugin and in your plugin's `apply` function, register your implementation
+of `BuildMetricsListener`. For example:
+
+```kotlin
+class BuildMetricsAmplitudePlugin : Plugin<Project>, BuildMetricsListener {
+    override fun onClientCreated(client: Client) {
+        // This callback is called only once per client
+    }
+
+    override fun onBuildFinished(client: Client, event: BuildFinishedEvent) {
+        // This callback is called when the build is finished
+    }
+
+    override fun apply(project: Project) {
+        // The import part
+        project.extensions.getByType(BuildMetricsExtensions::class.java).register(this)
+    }
+}
+``` 
+
+## Contributing
+
+Make a Pull Request.
+
+## Reporting an issue
+
+Use Github issue tracker.
 
 ## License
 

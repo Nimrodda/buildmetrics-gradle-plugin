@@ -18,7 +18,7 @@ gradlePlugin {
             id = "com.nimroddayan.buildmetrics.mixpanel"
             implementationClass = "com.nimroddayan.buildmetrics.plugin.BuildMetricsMixpanelPlugin"
             displayName = "Build Metrics Mixpanel extension"
-            description = "This is a Mixpanel extension plugin to Build Metrics runtime plugin"
+            description = "A Mixpanel extension plugin for Build Metrics runtime plugin"
         }
     }
 }

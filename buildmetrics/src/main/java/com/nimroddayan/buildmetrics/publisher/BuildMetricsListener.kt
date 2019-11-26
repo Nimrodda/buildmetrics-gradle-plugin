@@ -17,14 +17,34 @@
 
 package com.nimroddayan.buildmetrics.publisher
 
+import com.nimroddayan.buildmetrics.plugin.BuildMetricsExtensions
 import java.io.Serializable
 
 /**
  * Listener for build metric events
+ *
+ * This interface is used by build metrics extension plugins for implementing publishers.
+ * Register implementations with [BuildMetricsExtensions] in your plugin's apply method.
+ *
+ * For example:
+ *
+ * ```
+ * class BuildMetricsAmplitudePlugin : Plugin<Project>, BuildMetricsListener {
+ *     override fun onClientCreated(client: Client) {
+ *     }
+ *
+ *     override fun onBuildFinished(client: Client, event: BuildFinishedEvent) {
+ *     }
+ *
+ *     override fun apply(project: Project) {
+ *         project.extensions.getByType(BuildMetricsExtensions::class.java).register(this)
+ *     }
+ * }
+ * ```
  */
 interface BuildMetricsListener : Serializable {
     /**
-     * Event called when build finished
+     * Event called when the build is finished
      */
     fun onBuildFinished(client: Client, event: BuildFinishedEvent)
 
