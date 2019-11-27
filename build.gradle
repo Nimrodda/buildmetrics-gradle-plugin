@@ -4,6 +4,7 @@ plugins {
     id("org.jmailen.kotlinter") version "2.1.2"
     id "com.gradle.plugin-publish" version "0.10.1" apply(false)
     id "org.jetbrains.gradle.plugin.idea-ext" version "0.7"
+    id "com.jfrog.bintray" version "1.8.4" apply(false)
 }
 
 allprojects {

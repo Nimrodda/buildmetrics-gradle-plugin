@@ -2,19 +2,12 @@ plugins {
     id 'org.jetbrains.kotlin.jvm'
     id "maven-publish"
     id "com.squareup.sqldelight" version "1.2.0"
+    id "com.jfrog.bintray"
 }
 
 apply from: '../common.gradle'
 
 dependencies {
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
 }
 
 sqldelight {
@@ -23,3 +16,5 @@ sqldelight {
         schemaOutputDirectory = file("src/main/sqldelight/databases")
     }
 }
+
+apply from: "../maven-publish.gradle"

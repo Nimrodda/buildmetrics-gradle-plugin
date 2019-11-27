@@ -1,6 +1,7 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
     id "maven-publish"
+    id "com.jfrog.bintray"
 }
 
 apply from: '../common.gradle'
@@ -20,10 +21,4 @@ dependencies {
     testApi Deps.truth
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-}
+apply from: "../maven-publish.gradle"

@@ -1,0 +1,37 @@
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            pom {
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                scm {
+                    url = 'https://github.com/Nimrodda/buildmetrics-gradle-plugin.git'
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = bintray_user
+    key = bintray_api_key
+    publications = ['mavenPublication']
+    pkg {
+        repo = 'buildmetrics'
+        name = project.name
+        userOrg = 'nimroddayan'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/Nimrodda/buildmetrics-gradle-plugin.git'
+        version {
+            name = project.version
+            gpg {
+                sign = true
+            }
+        }
+    }
+}
