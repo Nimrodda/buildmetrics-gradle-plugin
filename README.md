@@ -42,7 +42,13 @@ Add the following to the top of your `settings.gradle` file:
 ```groovy
 pluginManagement {
     repositories {
-        mavenLocal()
+        // This repository is required for dependencies used by the plugin
+        // namely com.nimroddadyan.buildmetrics:buildmetrics-db
+        // and com.nimroddayan.buildmetrics:buildmetrics-common
+        // The plan is to publishe these dependencies to jcenter so there won't be a need for this extra repo
+        maven {
+            url  "https://dl.bintray.com/nimroddayan/buildmetrics"
+        }
         mavenCentral()
         jcenter()
         google()
@@ -113,8 +119,12 @@ googleAnalytics {
 Developing your own extension is super easy. I highly recommend that you use one of the analytics services plugins 
 in this repository as a reference, for example, `buildmetrics-amplitude`.
 
-Implement your plugin as you would any Gradle plugin and in your plugin's `apply` function, register your implementation
-of `BuildMetricsListener`. For example:
+Your plugin needs to depend on `com.nimroddayan.buildmetrics:buildmetrics:$version`, which exposes an interface
+`BuildMetricsListener` that you need to implement in your plugin and then in your plugin's `apply` function, 
+register your implementation of `BuildMetricsListener` by getting `BuildMetricsExtensions`. You must first apply
+`BuildMetricsPlugin` before you can get the extensions. 
+
+For example:
 
 ```kotlin
 class BuildMetricsAmplitudePlugin : Plugin<Project>, BuildMetricsListener {
@@ -127,11 +137,28 @@ class BuildMetricsAmplitudePlugin : Plugin<Project>, BuildMetricsListener {
     }
 
     override fun apply(project: Project) {
-        // The import part
+        // First we apply buildmetrics plugin (this is the runtime plugin)
+        project.pluginManager.apply(BuildMetricsPlugin::class.java)
+        // Then we get the extensions and register our listener implementation
         project.extensions.getByType(BuildMetricsExtensions::class.java).register(this)
     }
 }
 ``` 
+
+In your `build.gradle`:
+
+```groovy
+repositories {
+    maven {
+        url  "https://dl.bintray.com/nimroddayan/buildmetrics"
+    }
+    gradlePluginPortal()
+}
+
+dependencies {
+    implementation "com.nimroddayan.buildmetrics:buildmetrics:$version"
+}
+```
 
 ## Contributing
 
