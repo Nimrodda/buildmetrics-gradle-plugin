@@ -33,7 +33,7 @@ gradlePlugin {
 }
 
 pluginBundle {
-    website = 'https://github.com/Nimrodda/build-metrics-gradle-plugin'
-    vcsUrl = 'https://github.com/Nimrodda/build-metrics-gradle-plugin'
+    website = 'https://github.com/Nimrodda/buildmetrics-gradle-plugin'
+    vcsUrl = 'https://github.com/Nimrodda/buildmetrics-gradle-plugin'
     tags = ['analytics', 'amplitude', 'mixpanel', 'build', 'metrics', 'google', 'track']
 }
