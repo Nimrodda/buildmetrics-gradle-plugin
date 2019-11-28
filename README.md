@@ -45,7 +45,7 @@ pluginManagement {
         // This repository is required for dependencies used by the plugin
         // namely com.nimroddadyan.buildmetrics:buildmetrics-db
         // and com.nimroddayan.buildmetrics:buildmetrics-common
-        // The plan is to publishe these dependencies to jcenter so there won't be a need for this extra repo
+        // The plan is to publish these dependencies to jcenter so there won't be a need for this extra repo
         maven {
             url  "https://dl.bintray.com/nimroddayan/buildmetrics"
         }
