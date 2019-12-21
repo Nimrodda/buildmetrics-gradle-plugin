@@ -21,6 +21,7 @@ bintray {
     user = bintray_user
     key = bintray_api_key
     publications = ['mavenPublication']
+    publish = true
     pkg {
         repo = 'buildmetrics'
         name = project.name
