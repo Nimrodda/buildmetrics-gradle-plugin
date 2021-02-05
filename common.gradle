@@ -1,13 +1,8 @@
 group 'com.nimroddayan.buildmetrics'
 version '0.1.0'
 
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {

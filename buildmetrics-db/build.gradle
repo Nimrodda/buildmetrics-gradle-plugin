@@ -1,8 +1,8 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
-    id "maven-publish"
     id "com.squareup.sqldelight" version "1.2.0"
-    id "com.jfrog.bintray"
+    id "org.jetbrains.dokka"
+    id "com.vanniktech.maven.publish"
 }
 
 apply from: '../common.gradle'
@@ -16,5 +16,3 @@ sqldelight {
         schemaOutputDirectory = file("src/main/sqldelight/databases")
     }
 }
-
-apply from: "../maven-publish.gradle"

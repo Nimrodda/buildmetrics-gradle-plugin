@@ -27,14 +27,26 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
+/**
+ * Dependency injection
+ */
 object Injection {
+    /**
+     * Instance of OkHttp
+     */
     val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor(HttpGradleLogger()).apply { level = HttpLoggingInterceptor.Level.BODY })
         .callTimeout(3L, TimeUnit.SECONDS)
         .build()
 
+    /**
+     * Instance of Moshi
+     */
     val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
+    /**
+     * Creates instance of Retrofit
+     */
     fun retrofit(baseUrl: HttpUrl): Retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
@@ -42,6 +54,9 @@ object Injection {
         .build()
 }
 
+/**
+ * OkHttp logger
+ */
 private class HttpGradleLogger : HttpLoggingInterceptor.Logger {
     private val log = KotlinLogging.logger {}
 

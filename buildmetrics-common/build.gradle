@@ -1,7 +1,7 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm'
-    id "maven-publish"
-    id "com.jfrog.bintray"
+    id "org.jetbrains.dokka"
+    id "com.vanniktech.maven.publish"
 }
 
 apply from: '../common.gradle'
@@ -20,5 +20,3 @@ dependencies {
     testApi Deps.mockServer
     testApi Deps.truth
 }
-
-apply from: "../maven-publish.gradle"

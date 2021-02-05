@@ -4,12 +4,12 @@ plugins {
     id("org.jmailen.kotlinter") version "2.1.2"
     id "com.gradle.plugin-publish" version "0.10.1" apply(false)
     id "org.jetbrains.gradle.plugin.idea-ext" version "0.7"
-    id "com.jfrog.bintray" version "1.8.4" apply(false)
+    id "org.jetbrains.dokka" version "0.9.17" apply(false)
+    id "com.vanniktech.maven.publish" version "0.13.0" apply(false)
 }
 
 allprojects {
     repositories {
-        jcenter()
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }

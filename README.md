@@ -43,7 +43,6 @@ Add the following to the top of your `settings.gradle` file:
 pluginManagement {
     repositories {
         mavenCentral()
-        jcenter()
         google()
         gradlePluginPortal()
     }
@@ -142,7 +141,7 @@ In your `build.gradle`:
 
 ```groovy
 repositories {
-    jcenter()
+    mavenCentral()
     gradlePluginPortal()
 }
 
